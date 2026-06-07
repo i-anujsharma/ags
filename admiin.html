@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Ankit General Store</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .admin-nav { background:var(--green-dark)!important; }
+    .admin-nav .nav-logo, .admin-nav .nav-links a { color:#fff!important; }
+    .admin-nav .nav-cart { background:var(--saffron); color:#1a1a1a!important; }
+  </style>
+</head>
+<body>
+<nav class="navbar admin-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><div class="logo-icon" style="background:var(--saffron);color:#1a1a1a">⚙</div><span>AGS Admin</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" style="color:rgba(255,255,255,.7)">← Store Front</a></li>
+      <li><button id="logout-btn" style="color:#fff;font-weight:600;font-size:.92rem;padding:6px 14px">Logout</button></li>
+    </ul>
+    <button class="dark-toggle">🌙</button>
+  </div>
+</nav>
+
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">
+      <h2>⚙ Admin Panel</h2>
+      <p id="admin-email" style="font-size:.8rem;color:var(--text-2)"></p>
+    </div>
+    <button class="admin-tab active" data-panel="panel-dashboard"><span class="tab-icon">📊</span> Dashboard</button>
+    <button class="admin-tab" data-panel="panel-products"><span class="tab-icon">📦</span> Products</button>
+    <button class="admin-tab" data-panel="panel-orders"><span class="tab-icon">🛒</span> Orders</button>
+    <button class="admin-tab" data-panel="panel-settings"><span class="tab-icon">⚙</span> Settings</button>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+
+    <!-- Dashboard tab -->
+    <div class="tab-panel active" id="panel-dashboard">
+      <h2 style="margin-bottom:24px">Dashboard</h2>
+      <div class="stat-cards">
+        <div class="stat-card"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total Products</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-instock" style="color:var(--green)">—</div><div class="stat-label">In Stock</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-low" style="color:var(--saffron)">—</div><div class="stat-label">Low Stock</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat-out" style="color:var(--red)">—</div><div class="stat-label">Out of Stock</div></div>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
+        <h3 style="margin-bottom:16px;font-size:1rem">Quick Actions</h3>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button id="add-prod-quick" class="btn btn-green">+ Add Product</button>
+          <button id="seed-btn" class="btn" style="border:1.5px solid var(--border)">🌱 Seed Sample Products</button>
+          <a href="products.html" target="_blank" class="btn" style="border:1.5px solid var(--border)">🏪 View Store</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products tab -->
+    <div class="tab-panel" id="panel-products">
+      <div class="admin-topbar">
+        <h2>Products</h2>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="search-wrap" style="max-width:260px">
+            <input type="text" id="admin-search" placeholder="Search products…">
+            <button>🔍</button>
+          </div>
+          <button id="add-prod-btn" class="btn btn-green">+ Add Product</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Featured</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="prod-tbody">
+            <tr><td colspan="6" class="empty-row">Loading products…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Orders tab -->
+    <div class="tab-panel" id="panel-orders">
+      <div class="admin-topbar"><h2>Orders</h2></div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr>
+          </thead>
+          <tbody id="orders-tbody">
+            <tr><td colspan="6" class="empty-row">Loading orders…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Settings tab -->
+    <div class="tab-panel" id="panel-settings">
+      <h2 style="margin-bottom:24px">Settings</h2>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;max-width:500px">
+        <h3 style="margin-bottom:16px;font-size:1rem">Store Information</h3>
+        <div class="profile-row"><span>Store Name</span><strong>Ankit General Store</strong></div>
+        <div class="profile-row"><span>Location</span><strong>RARI, Mihona</strong></div>
+        <div class="profile-row"><span>WhatsApp</span><strong>+91 7617263817</strong></div>
+        <div class="profile-row"><span>Admin Email</span><strong id="settings-email">—</strong></div>
+        <div style="margin-top:20px;padding:16px;background:var(--green-lt);border-radius:var(--radius-sm);">
+          <p style="font-size:.88rem;color:var(--green-dark)">
+            <strong>Firebase Rules Reminder:</strong> Make sure your Firestore security rules only allow admin writes. See the included <code>firestore.rules</code> file.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Product Modal -->
+<div class="modal-overlay" id="prod-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modal-title">Add Product</h3>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <form id="prod-form" autocomplete="off">
+      <div class="form-group">
+        <label>Product Name *</label>
+        <input name="prod-name" class="form-input" placeholder="e.g. Tata Salt 1kg" required>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="prod-desc" class="form-input form-textarea" placeholder="Short product description…"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="form-group">
+          <label>Price (₹) *</label>
+          <input name="prod-price" type="number" min="0" class="form-input" placeholder="0" required>
+        </div>
+        <div class="form-group">
+          <label>Stock Quantity</label>
+          <input name="prod-stock" type="number" min="0" class="form-input" placeholder="0" value="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select name="prod-category" class="form-input form-select" id="prod-category"></select>
+      </div>
+      <div class="form-group">
+        <label>Image URL <span style="color:var(--text-3);font-size:.8rem">(paste a direct image link)</span></label>
+        <input name="prod-image" type="url" class="form-input" placeholder="https://example.com/image.jpg">
+      </div>
+      <div class="form-group">
+        <div class="checkbox-wrap">
+          <input type="checkbox" name="prod-featured" id="prod-featured">
+          <label for="prod-featured">⭐ Mark as Featured</label>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <button type="submit" class="btn btn-green" style="flex:1">Save Product</button>
+        <button type="button" id="modal-cancel" class="btn" style="border:1.5px solid var(--border);flex:1">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+  import { auth } from "./js/firebase.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { initDarkMode, updateCartBadge } from "./js/utils.js";
+  import "./js/admin.js";
+
+  initDarkMode();
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById("admin-email").textContent = user.email;
+      document.getElementById("settings-email").textContent = user.email;
+    }
+  });
+
+  document.getElementById("modal-cancel")?.addEventListener("click", () => {
+    document.getElementById("prod-modal").style.display = "none";
+  });
+  document.getElementById("add-prod-quick")?.addEventListener("click", () => {
+    document.getElementById("add-prod-btn")?.click();
+    document.querySelector('[data-panel="panel-products"]')?.click();
+  });
+  document.getElementById("logout-btn")?.addEventListener("click", async () => {
+    const { logoutUser } = await import("./js/auth.js");
+    await logoutUser();
+    window.location.href = "login.html";
+  });
+</script>
+</body>
+</html>
