@@ -11,13 +11,15 @@ import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-
 
 // ─── YOUR FIREBASE CONFIG ─────────────────────────────────
 const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_AUTH_DOMAIN",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey: "AIzaSyB9Z7K293ydkuy2jZHpqzawDBI-FtZVB6o",
+  authDomain: "ankit-general-store-33443.firebaseapp.com",
+  projectId: "ankit-general-store-33443",
+  storageBucket: "ankit-general-store-33443.firebasestorage.app",
+  messagingSenderId: "46126405791",
+  appId: "1:46126405791:web:e2dca04c30a1ec303caaaa",
+  measurementId: "G-TD2KF7CHP1"
 };
+
 // ──────────────────────────────────────────────────────────
 
 const app     = initializeApp(firebaseConfig);
@@ -26,7 +28,7 @@ const db      = getFirestore(app);
 const storage = getStorage(app);
 
 // Admin email — change this to your admin email
-export const ADMIN_EMAIL = "admin@ankitgeneralstore.com";
+export const ADMIN_EMAIL = "anuj7harma@gmail.com";
 
 // WhatsApp number (with country code, no + or spaces)
 export const WHATSAPP_NUMBER = "917617263817";
