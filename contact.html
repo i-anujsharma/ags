@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Ankit General Store</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><div class="logo-icon">🛒</div><span>AGS</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+      <li id="nav-auth"><a href="login.html">Login</a></li>
+      <li><a href="cart.html" class="nav-cart">🛒 Cart<span class="cart-badge" style="display:none">0</span></a></li>
+    </ul>
+    <button class="dark-toggle">🌙</button>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="index.html">🏠 Home</a><a href="products.html">📦 Products</a>
+  <a href="cart.html">🛒 Cart</a><a href="login.html" id="mob-auth">👤 Login</a>
+</nav>
+
+<div class="page-header">
+  <div class="container"><h1>Contact Us</h1><p style="color:var(--green-dark);margin-top:6px">We'd love to hear from you!</p></div>
+</div>
+
+<section class="section">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <h2>Get in Touch</h2>
+      <p>Have a question about a product, your order, or anything else? Reach out to us — we're always happy to help!</p>
+
+      <div class="contact-detail">
+        <div class="contact-icon">📞</div>
+        <div>
+          <strong>Phone</strong><br>
+          <a href="tel:7617263817" style="color:var(--green)">7617263817</a>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-icon">💬</div>
+        <div>
+          <strong>WhatsApp</strong><br>
+          <a href="https://wa.me/917617263817" target="_blank" style="color:var(--green)">Chat on WhatsApp</a>
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-icon">📍</div>
+        <div>
+          <strong>Location</strong><br>
+          RARI, Mihona, Madhya Pradesh
+        </div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-icon">⏰</div>
+        <div>
+          <strong>Store Hours</strong><br>
+          Mon–Sat: 8 AM – 9 PM<br>
+          Sunday: 9 AM – 7 PM
+        </div>
+      </div>
+
+      <div style="margin-top:28px">
+        <a href="https://wa.me/917617263817" class="btn btn-green" target="_blank" style="gap:8px">
+          💬 Chat on WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px;">
+        <h3 style="margin-bottom:24px">Send a Message</h3>
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="c-name" class="form-input" placeholder="Anuj Sharma">
+        </div>
+        <div class="form-group">
+          <label>Phone / Email</label>
+          <input type="text" id="c-contact" class="form-input" placeholder="7617263817 or email@example.com">
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="c-msg" class="form-input form-textarea" placeholder="I have a question about…"></textarea>
+        </div>
+        <button id="send-wa" class="btn btn-green btn-block">💬 Send via WhatsApp</button>
+        <p style="font-size:.8rem;color:var(--text-2);text-align:center;margin-top:10px">This will open WhatsApp with your message pre-filled.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><h3>🛒 Ankit General Store</h3><p>RARI, Mihona — Your trusted neighbourhood shop.</p></div>
+      <div><h4>Links</h4><ul><li><a href="index.html">Home</a></li><li><a href="products.html">Products</a></li><li><a href="cart.html">Cart</a></li></ul></div>
+      <div><h4>Account</h4><ul><li><a href="login.html">Login</a></li><li><a href="signup.html">Sign Up</a></li></ul></div>
+      <div><h4>Contact</h4><ul><li><a href="tel:7617263817">📞 7617263817</a></li><li><a href="https://wa.me/917617263817" target="_blank">💬 WhatsApp</a></li><li><a href="#">📍 RARI, Mihona</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 Ankit General Store (AGS)</p></div>
+  </div>
+</footer>
+<a href="https://wa.me/917617263817" class="wa-float" target="_blank">💬</a>
+
+<script type="module">
+  import { auth, WHATSAPP_NUMBER } from "./js/firebase.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { initDarkMode, updateCartBadge, showToast } from "./js/utils.js";
+
+  initDarkMode();
+  updateCartBadge();
+  document.getElementById("hamburger")?.addEventListener("click", () => document.getElementById("nav-mobile")?.classList.toggle("open"));
+  onAuthStateChanged(auth, user => { if(user) document.getElementById("nav-auth").innerHTML=`<a href="profile.html">👤 ${user.displayName||"Profile"}</a>`; });
+
+  document.getElementById("send-wa").addEventListener("click", () => {
+    const name    = document.getElementById("c-name").value.trim();
+    const contact = document.getElementById("c-contact").value.trim();
+    const msg     = document.getElementById("c-msg").value.trim();
+    if (!name || !msg) { showToast("Please enter your name and message.", "warning"); return; }
+    const text = encodeURIComponent(`Hello AGS!\n\nName: ${name}\nContact: ${contact||"—"}\n\nMessage: ${msg}\n\nThank you!`);
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank");
+  });
+</script>
+</body>
+</html>
