@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — Ankit General Store</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><div class="logo-icon">🛒</div><span>AGS</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="products.html" class="active">Products</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li id="nav-auth"><a href="login.html">Login</a></li>
+      <li id="nav-admin" style="display:none"><a href="admin.html">Admin</a></li>
+      <li><a href="cart.html" class="nav-cart">🛒 Cart<span class="cart-badge" style="display:none">0</span></a></li>
+    </ul>
+    <button class="dark-toggle">🌙</button>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="index.html">🏠 Home</a>
+  <a href="products.html">📦 Products</a>
+  <a href="cart.html">🛒 Cart</a>
+  <a href="contact.html">📞 Contact</a>
+  <a href="login.html" id="mob-auth">👤 Login</a>
+</nav>
+
+<!-- Page header -->
+<div class="page-header">
+  <div class="container">
+    <h1>All Products</h1>
+    <p style="color:var(--green-dark);margin-top:6px">Browse our full range of groceries and daily essentials</p>
+  </div>
+</div>
+
+<section class="section-sm">
+  <div class="container">
+
+    <!-- Toolbar: search + sort -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+      <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="Search products…" autocomplete="off">
+        <button>🔍</button>
+      </div>
+      <select id="sort-sel" class="form-input form-select" style="width:auto;min-width:160px">
+        <option value="">Sort: Default</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="name-asc">Name: A–Z</option>
+        <option value="stock-desc">Most In Stock</option>
+      </select>
+    </div>
+
+    <!-- Category chips -->
+    <div class="cat-chips" id="cat-chips"></div>
+
+    <!-- Grid -->
+    <div id="products-grid" class="products-grid stagger"></div>
+    <p id="no-results" style="display:none;text-align:center;color:var(--text-2);padding:60px 0;">No products found. Try a different search or category.</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand"><h3>🛒 Ankit General Store</h3><p>RARI, Mihona — Your trusted neighbourhood shop.</p></div>
+      <div><h4>Links</h4><ul><li><a href="index.html">Home</a></li><li><a href="products.html">Products</a></li><li><a href="cart.html">Cart</a></li></ul></div>
+      <div><h4>Account</h4><ul><li><a href="login.html">Login</a></li><li><a href="signup.html">Sign Up</a></li></ul></div>
+      <div><h4>Contact</h4><ul><li><a href="tel:7617263817">📞 7617263817</a></li><li><a href="https://wa.me/917617263817" target="_blank">💬 WhatsApp</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 Ankit General Store (AGS)</p></div>
+  </div>
+</footer>
+<a href="https://wa.me/917617263817" class="wa-float" target="_blank">💬</a>
+
+<script type="module">
+  import { auth, ADMIN_EMAIL } from "./js/firebase.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { fetchProducts, productCardHTML, attachCartListeners, CATEGORIES } from "./js/products.js";
+  import { updateCartBadge, initDarkMode, debounce } from "./js/utils.js";
+
+  initDarkMode();
+  updateCartBadge();
+
+  document.getElementById("hamburger")?.addEventListener("click", () => document.getElementById("nav-mobile")?.classList.toggle("open"));
+
+  // Auth
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById("nav-auth").innerHTML = `<a href="profile.html">👤 ${user.displayName||"Profile"}</a>`;
+      if (user.email === ADMIN_EMAIL) document.getElementById("nav-admin").style.display = "block";
+    }
+  });
+
+  // Read URL params
+  const params = new URLSearchParams(window.location.search);
+  let activeCat = params.get("cat") || "All";
+  let searchTerm = "";
+
+  // Category chips
+  const chipWrap = document.getElementById("cat-chips");
+  CATEGORIES.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "chip" + (cat === activeCat ? " active" : "");
+    btn.textContent = cat;
+    btn.addEventListener("click", () => {
+      activeCat = cat;
+      document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      loadProducts();
+    });
+    chipWrap.appendChild(btn);
+  });
+
+  // Sort
+  let sortMode = "";
+  document.getElementById("sort-sel").addEventListener("change", e => { sortMode = e.target.value; renderGrid(allProducts); });
+
+  // Search
+  let allProducts = [];
+  document.getElementById("search-input").addEventListener("input", debounce(e => {
+    searchTerm = e.target.value;
+    loadProducts();
+  }, 350));
+
+  async function loadProducts() {
+    const grid = document.getElementById("products-grid");
+    grid.innerHTML = `<p style="color:var(--text-2);grid-column:1/-1">Loading…</p>`;
+    try {
+      allProducts = await fetchProducts(activeCat, searchTerm);
+      renderGrid(allProducts);
+    } catch(e) {
+      grid.innerHTML = `<p style="color:var(--red);grid-column:1/-1">Error loading products. Check Firebase config.</p>`;
+    }
+  }
+
+  function renderGrid(products) {
+    let sorted = [...products];
+    if (sortMode === "price-asc")  sorted.sort((a,b) => a.price - b.price);
+    if (sortMode === "price-desc") sorted.sort((a,b) => b.price - a.price);
+    if (sortMode === "name-asc")   sorted.sort((a,b) => a.name.localeCompare(b.name));
+    if (sortMode === "stock-desc") sorted.sort((a,b) => b.stock - a.stock);
+
+    const grid   = document.getElementById("products-grid");
+    const noRes  = document.getElementById("no-results");
+    if (sorted.length === 0) {
+      grid.innerHTML = ""; noRes.style.display = "block"; return;
+    }
+    noRes.style.display = "none";
+    grid.innerHTML = sorted.map(p => productCardHTML(p)).join("");
+    attachCartListeners(sorted);
+  }
+
+  loadProducts();
+</script>
+</body>
+</html>
