@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart — Ankit General Store</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><div class="logo-icon">🛒</div><span>AGS</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li id="nav-auth"><a href="login.html">Login</a></li>
+      <li><a href="cart.html" class="nav-cart active">🛒 Cart<span class="cart-badge" style="display:none">0</span></a></li>
+    </ul>
+    <button class="dark-toggle">🌙</button>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<nav class="nav-mobile" id="nav-mobile">
+  <a href="index.html">🏠 Home</a><a href="products.html">📦 Products</a>
+  <a href="cart.html">🛒 Cart</a><a href="login.html" id="mob-auth">👤 Login</a>
+</nav>
+
+<div class="page-header">
+  <div class="container"><h1>🛒 Your Cart</h1></div>
+</div>
+
+<div class="container cart-page">
+  <!-- Empty state -->
+  <div id="cart-empty" class="cart-empty" style="display:none">
+    <div class="empty-icon">🛒</div>
+    <h3>Your cart is empty</h3>
+    <p>Looks like you haven't added anything yet.</p>
+    <a href="products.html" class="btn btn-green">Browse Products →</a>
+  </div>
+
+  <!-- Cart layout -->
+  <div id="cart-layout" class="cart-layout">
+    <div>
+      <div class="cart-box">
+        <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <h3 style="font-size:1rem">Items (<span id="cart-item-count">0</span>)</h3>
+          <button id="clear-cart" style="color:var(--red);font-size:.85rem;font-weight:600;">Clear All</button>
+        </div>
+        <div id="cart-items"></div>
+      </div>
+      <a href="products.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:16px;color:var(--green);font-weight:600;font-size:.9rem;">← Continue Shopping</a>
+    </div>
+
+    <div id="cart-summary">
+      <div class="cart-summary-card">
+        <h3>Order Summary</h3>
+        <div class="summary-row"><span>Subtotal</span><span id="cart-total-amt">₹0</span></div>
+        <div class="summary-row"><span>Delivery</span><span style="color:var(--green);font-weight:600">Contact to confirm</span></div>
+        <div class="summary-row summary-total"><span>Total</span><span id="cart-total-amt2">₹0</span></div>
+        <button id="checkout-btn" class="cart-wa-btn">
+          💬 Order on WhatsApp
+        </button>
+        <p style="font-size:.78rem;color:var(--text-2);text-align:center;margin-top:10px;">
+          Your order will be sent to AGS via WhatsApp for confirmation.
+        </p>
+        <div id="login-warn" style="display:none;margin-top:12px;padding:10px;background:var(--saffron-lt);border-radius:var(--radius-sm);font-size:.85rem;text-align:center;color:#92400e;">
+          <a href="login.html" style="color:var(--green);font-weight:600;">Login</a> to save your order history.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer" style="margin-top:60px">
+  <div class="container"><div class="footer-bottom"><p>© 2025 Ankit General Store (AGS)</p></div></div>
+</footer>
+<a href="https://wa.me/917617263817" class="wa-float" target="_blank">💬</a>
+
+<script type="module">
+  import { auth } from "./js/firebase.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { updateCartBadge, initDarkMode, getCart, saveCart } from "./js/utils.js";
+  import "./js/cart.js";
+
+  initDarkMode();
+  updateCartBadge();
+
+  document.getElementById("hamburger")?.addEventListener("click", () => document.getElementById("nav-mobile")?.classList.toggle("open"));
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById("nav-auth").innerHTML = `<a href="profile.html">👤 ${user.displayName||"Profile"}</a>`;
+      document.getElementById("login-warn").style.display = "none";
+    } else {
+      document.getElementById("login-warn").style.display = "block";
+    }
+  });
+
+  // Sync total2
+  const obs = new MutationObserver(() => {
+    const v = document.getElementById("cart-total-amt")?.textContent;
+    if (v) document.getElementById("cart-total-amt2").textContent = v;
+  });
+  const el = document.getElementById("cart-total-amt");
+  if (el) obs.observe(el, { childList: true, characterData: true, subtree: true });
+
+  // Clear all
+  document.getElementById("clear-cart")?.addEventListener("click", () => {
+    if (confirm("Clear entire cart?")) { saveCart([]); location.reload(); }
+  });
+</script>
+</body>
+</html>
