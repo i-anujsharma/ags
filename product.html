@@ -3,12 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Products — Ankit General Store</title>
+  <title>Product — Ankit General Store</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
-<!-- Navbar -->
 <nav class="navbar">
   <div class="nav-inner">
     <a href="index.html" class="nav-logo"><div class="logo-icon">🛒</div><span>AGS</span></a>
@@ -17,7 +15,6 @@
       <li><a href="products.html" class="active">Products</a></li>
       <li><a href="contact.html">Contact</a></li>
       <li id="nav-auth"><a href="login.html">Login</a></li>
-      <li id="nav-admin" style="display:none"><a href="admin.html">Admin</a></li>
       <li><a href="cart.html" class="nav-cart">🛒 Cart<span class="cart-badge" style="display:none">0</span></a></li>
     </ul>
     <button class="dark-toggle">🌙</button>
@@ -25,141 +22,100 @@
   </div>
 </nav>
 <nav class="nav-mobile" id="nav-mobile">
-  <a href="index.html">🏠 Home</a>
-  <a href="products.html">📦 Products</a>
-  <a href="cart.html">🛒 Cart</a>
-  <a href="contact.html">📞 Contact</a>
-  <a href="login.html" id="mob-auth">👤 Login</a>
+  <a href="index.html">🏠 Home</a><a href="products.html">📦 Products</a>
+  <a href="cart.html">🛒 Cart</a><a href="login.html" id="mob-auth">👤 Login</a>
 </nav>
 
-<!-- Page header -->
-<div class="page-header">
-  <div class="container">
-    <h1>All Products</h1>
-    <p style="color:var(--green-dark);margin-top:6px">Browse our full range of groceries and daily essentials</p>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="index.html">Home</a><span>/</span>
+    <a href="products.html">Products</a><span>/</span>
+    <span id="bc-name">Product</span>
+  </div>
+
+  <div id="detail-wrap" class="product-detail fade-in">
+    <p style="color:var(--text-2);grid-column:1/-1">Loading product…</p>
   </div>
 </div>
 
-<section class="section-sm">
+<footer class="footer" style="margin-top:60px">
   <div class="container">
-
-    <!-- Toolbar: search + sort -->
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
-      <div class="search-wrap">
-        <input type="text" id="search-input" placeholder="Search products…" autocomplete="off">
-        <button>🔍</button>
-      </div>
-      <select id="sort-sel" class="form-input form-select" style="width:auto;min-width:160px">
-        <option value="">Sort: Default</option>
-        <option value="price-asc">Price: Low to High</option>
-        <option value="price-desc">Price: High to Low</option>
-        <option value="name-asc">Name: A–Z</option>
-        <option value="stock-desc">Most In Stock</option>
-      </select>
-    </div>
-
-    <!-- Category chips -->
-    <div class="cat-chips" id="cat-chips"></div>
-
-    <!-- Grid -->
-    <div id="products-grid" class="products-grid stagger"></div>
-    <p id="no-results" style="display:none;text-align:center;color:var(--text-2);padding:60px 0;">No products found. Try a different search or category.</p>
-  </div>
-</section>
-
-<!-- Footer -->
-<footer class="footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand"><h3>🛒 Ankit General Store</h3><p>RARI, Mihona — Your trusted neighbourhood shop.</p></div>
-      <div><h4>Links</h4><ul><li><a href="index.html">Home</a></li><li><a href="products.html">Products</a></li><li><a href="cart.html">Cart</a></li></ul></div>
-      <div><h4>Account</h4><ul><li><a href="login.html">Login</a></li><li><a href="signup.html">Sign Up</a></li></ul></div>
-      <div><h4>Contact</h4><ul><li><a href="tel:7617263817">📞 7617263817</a></li><li><a href="https://wa.me/917617263817" target="_blank">💬 WhatsApp</a></li></ul></div>
-    </div>
     <div class="footer-bottom"><p>© 2025 Ankit General Store (AGS)</p></div>
   </div>
 </footer>
 <a href="https://wa.me/917617263817" class="wa-float" target="_blank">💬</a>
 
 <script type="module">
-  import { auth, ADMIN_EMAIL } from "./js/firebase.js";
+  import { auth } from "./js/firebase.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { fetchProducts, productCardHTML, attachCartListeners, CATEGORIES } from "./js/products.js";
-  import { updateCartBadge, initDarkMode, debounce } from "./js/utils.js";
+  import { fetchProduct } from "./js/products.js";
+  import { updateCartBadge, initDarkMode, addToCart, formatPrice, showToast } from "./js/utils.js";
 
   initDarkMode();
   updateCartBadge();
 
   document.getElementById("hamburger")?.addEventListener("click", () => document.getElementById("nav-mobile")?.classList.toggle("open"));
+  onAuthStateChanged(auth, user => { if(user) document.getElementById("nav-auth").innerHTML=`<a href="profile.html">👤 ${user.displayName||"Profile"}</a>`; });
 
-  // Auth
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      document.getElementById("nav-auth").innerHTML = `<a href="profile.html">👤 ${user.displayName||"Profile"}</a>`;
-      if (user.email === ADMIN_EMAIL) document.getElementById("nav-admin").style.display = "block";
-    }
-  });
+  const id = new URLSearchParams(window.location.search).get("id");
+  const wrap = document.getElementById("detail-wrap");
 
-  // Read URL params
-  const params = new URLSearchParams(window.location.search);
-  let activeCat = params.get("cat") || "All";
-  let searchTerm = "";
+  if (!id) { wrap.innerHTML = `<p style="color:var(--red)">No product specified.</p>`; }
+  else {
+    const p = await fetchProduct(id).catch(() => null);
+    if (!p) {
+      wrap.innerHTML = `<p style="color:var(--red)">Product not found.</p>`;
+    } else {
+      document.title = p.name + " — AGS";
+      document.getElementById("bc-name").textContent = p.name;
 
-  // Category chips
-  const chipWrap = document.getElementById("cat-chips");
-  CATEGORIES.forEach(cat => {
-    const btn = document.createElement("button");
-    btn.className = "chip" + (cat === activeCat ? " active" : "");
-    btn.textContent = cat;
-    btn.addEventListener("click", () => {
-      activeCat = cat;
-      document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
-      btn.classList.add("active");
-      loadProducts();
-    });
-    chipWrap.appendChild(btn);
-  });
+      const stockBadge = p.stock === 0
+        ? `<span class="badge badge-out">Out of Stock</span>`
+        : p.stock < 10
+          ? `<span class="badge badge-low">Low Stock — ${p.stock} left</span>`
+          : `<span class="badge badge-in">In Stock (${p.stock})</span>`;
 
-  // Sort
-  let sortMode = "";
-  document.getElementById("sort-sel").addEventListener("change", e => { sortMode = e.target.value; renderGrid(allProducts); });
+      wrap.innerHTML = `
+        <div class="detail-img">
+          ${p.imageURL
+            ? `<img src="${p.imageURL}" alt="${p.name}">`
+            : `<div class="img-placeholder" style="aspect-ratio:1;font-size:5rem">🛒</div>`}
+        </div>
+        <div class="detail-info">
+          <span class="detail-cat">${p.category}</span>
+          <h1 class="detail-name">${p.name}</h1>
+          <p class="detail-price">${formatPrice(p.price)}</p>
+          <p class="detail-desc">${p.description || "No description available."}</p>
+          ${stockBadge}
+          <div class="qty-wrap" style="margin-top:20px">
+            <label>Quantity:</label>
+            <div class="qty-ctrl">
+              <button class="qty-btn" id="qty-minus">−</button>
+              <span class="qty-num" id="qty-num">1</span>
+              <button class="qty-btn" id="qty-plus" ${p.stock===0?"disabled":""}>+</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;">
+            <button id="add-cart-btn" class="btn btn-green detail-add" ${p.stock===0?"disabled":""}>
+              ${p.stock===0?"Out of Stock":"🛒 Add to Cart"}
+            </button>
+            <a href="cart.html" class="btn btn-primary detail-add" id="go-cart" style="display:none">View Cart →</a>
+          </div>
+          <div style="margin-top:24px;padding:16px;background:var(--green-lt);border-radius:var(--radius-sm);">
+            <p style="font-size:.9rem;color:var(--green-dark)">💬 <strong>Order via WhatsApp</strong> — Add to cart and checkout to place your order instantly on WhatsApp.</p>
+          </div>
+        </div>`;
 
-  // Search
-  let allProducts = [];
-  document.getElementById("search-input").addEventListener("input", debounce(e => {
-    searchTerm = e.target.value;
-    loadProducts();
-  }, 350));
-
-  async function loadProducts() {
-    const grid = document.getElementById("products-grid");
-    grid.innerHTML = `<p style="color:var(--text-2);grid-column:1/-1">Loading…</p>`;
-    try {
-      allProducts = await fetchProducts(activeCat, searchTerm);
-      renderGrid(allProducts);
-    } catch(e) {
-      grid.innerHTML = `<p style="color:var(--red);grid-column:1/-1">Error loading products. Check Firebase config.</p>`;
+      let qty = 1;
+      const numEl = document.getElementById("qty-num");
+      document.getElementById("qty-minus").addEventListener("click", () => { if(qty>1){qty--;numEl.textContent=qty;} });
+      document.getElementById("qty-plus").addEventListener("click", () => { if(qty<p.stock){qty++;numEl.textContent=qty;} });
+      document.getElementById("add-cart-btn")?.addEventListener("click", () => {
+        addToCart(p, qty);
+        document.getElementById("go-cart").style.display = "inline-flex";
+      });
     }
   }
-
-  function renderGrid(products) {
-    let sorted = [...products];
-    if (sortMode === "price-asc")  sorted.sort((a,b) => a.price - b.price);
-    if (sortMode === "price-desc") sorted.sort((a,b) => b.price - a.price);
-    if (sortMode === "name-asc")   sorted.sort((a,b) => a.name.localeCompare(b.name));
-    if (sortMode === "stock-desc") sorted.sort((a,b) => b.stock - a.stock);
-
-    const grid   = document.getElementById("products-grid");
-    const noRes  = document.getElementById("no-results");
-    if (sorted.length === 0) {
-      grid.innerHTML = ""; noRes.style.display = "block"; return;
-    }
-    noRes.style.display = "none";
-    grid.innerHTML = sorted.map(p => productCardHTML(p)).join("");
-    attachCartListeners(sorted);
-  }
-
-  loadProducts();
 </script>
 </body>
 </html>
