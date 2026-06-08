@@ -1,15 +1,16 @@
 // ============================================================
 // firebase.js — Firebase App Initialization & Config
-// Replace the placeholders below with your actual Firebase
-// project credentials from Firebase Console.
 // ============================================================
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, setPersistence, browserLocalPersistence }
+                           from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ─── YOUR FIREBASE CONFIG ─────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+//  STEP 1: Paste your Firebase config values below
+//  Get them from: Firebase Console → Project Settings → Your apps → Web app
+// ─────────────────────────────────────────────────────────────
 const firebaseConfig = {
   apiKey: "AIzaSyB9Z7K293ydkuy2jZHpqzawDBI-FtZVB6o",
   authDomain: "ankit-general-store-33443.firebaseapp.com",
@@ -19,18 +20,18 @@ const firebaseConfig = {
   appId: "1:46126405791:web:e2dca04c30a1ec303caaaa",
   measurementId: "G-TD2KF7CHP1"
 };
-
-// ──────────────────────────────────────────────────────────
-
-const app     = initializeApp(firebaseConfig);
-const auth    = getAuth(app);
-const db      = getFirestore(app);
-const storage = getStorage(app);
-
-// Admin email — change this to your admin email
-export const ADMIN_EMAIL = "anuj7harma@gmail.com";
-
-// WhatsApp number (with country code, no + or spaces)
+// ─────────────────────────────────────────────────────────────
+//  STEP 2: Set your admin email (must match Firebase Auth user)
+// ─────────────────────────────────────────────────────────────
+export const ADMIN_EMAIL     = "anuj7harma@gmail.com";
 export const WHATSAPP_NUMBER = "917617263817";
+// ─────────────────────────────────────────────────────────────
 
-export { auth, db, storage };
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// Keep user logged in even after browser/tab close
+setPersistence(auth, browserLocalPersistence).catch(console.error);
+
+export { auth, db };
