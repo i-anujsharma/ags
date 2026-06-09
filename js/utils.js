@@ -82,7 +82,7 @@ export function addToCart(product, qty = 1) {
 }
 
 export function updateCartBadge() {
-  const cart = getCart();
+  const cart = getCart().filter(i => i != null);
   const total = cart.reduce((s, i) => s + i.qty, 0);
   document.querySelectorAll(".cart-badge").forEach(b => {
     b.textContent = total;
