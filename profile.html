@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile – AGS Store</title>
+
+  <!-- Google Fonts: Syne + DM Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── CSS Variables ─── */
+    :root {
+      --green:       #2d7a3a;
+      --green-light: #3a9e4a;
+      --green-pale:  #e8f5eb;
+      --saffron:     #e07b1a;
+      --saffron-light: #f5a144;
+      --saffron-pale:  #fff3e0;
+      --white:       #ffffff;
+      --bg:          #f5f7f5;
+      --surface:     #ffffff;
+      --border:      #d6e8d8;
+      --text:        #1a2e1d;
+      --text-muted:  #5a7060;
+      --danger:      #c0392b;
+      --shadow:      0 2px 12px rgba(45,122,58,0.10);
+      --radius:      12px;
+    }
+
+    [data-theme="dark"] {
+      --green:       #4caf60;
+      --green-light: #5ec474;
+      --green-pale:  #1a2e1d;
+      --saffron:     #f5a144;
+      --saffron-pale: #2e1f0a;
+      --white:       #1e2b20;
+      --bg:          #121a13;
+      --surface:     #1e2b20;
+      --border:      #2d4030;
+      --text:        #e2efe4;
+      --text-muted:  #8aaa8f;
+      --shadow:      0 2px 12px rgba(0,0,0,0.35);
+    }
+
+    /* ─── Reset & Base ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ─── Navbar ─── */
+    .navbar {
+      background: var(--green);
+      padding: 0 20px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .navbar-brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: 0.5px;
+    }
+    .navbar-brand span { color: var(--saffron-light); }
+
+    .navbar-actions { display: flex; align-items: center; gap: 12px; }
+
+    .btn-nav {
+      background: none;
+      border: 1.5px solid rgba(255,255,255,0.45);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      text-decoration: none;
+    }
+    .btn-nav:hover { background: rgba(255,255,255,0.12); border-color: #fff; }
+
+    /* ─── Loading / Auth Gate ─── */
+    #loading-screen, #auth-gate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 60px);
+      gap: 16px;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #auth-gate h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      color: var(--text);
+    }
+    .btn-login {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+    }
+    .btn-login:hover { background: var(--green-light); }
+
+    /* ─── Main Page ─── */
+    #profile-page {
+      display: none;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+    }
+
+    /* ─── Profile Hero Card ─── */
+    .profile-hero {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px 28px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      background: var(--green-pale);
+      border: 3px solid var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--green);
+      overflow: hidden;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .avatar-badge {
+      position: absolute;
+      bottom: 2px; right: 2px;
+      width: 20px; height: 20px;
+      background: var(--green);
+      border-radius: 50%;
+      border: 2.5px solid var(--surface);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar-badge svg { width: 10px; height: 10px; fill: #fff; }
+
+    .profile-info { flex: 1; min-width: 200px; }
+
+    .profile-info h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .profile-info .email {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      word-break: break-all;
+    }
+
+    .profile-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+    }
+    .badge-green { background: var(--green-pale); color: var(--green); }
+    .badge-saffron { background: var(--saffron-pale); color: var(--saffron); }
+
+    .profile-actions { display: flex; gap: 10px; flex-direction: column; align-items: flex-end; }
+
+    .btn-logout {
+      background: none;
+      border: 1.5px solid var(--danger);
+      color: var(--danger);
+      padding: 8px 18px;
+      border-radius: 9px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-logout:hover { background: #fdecea; }
+
+    /* ─── Section Cards ─── */
+    .section-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 16px 22px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-head h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-head h2 .icon { font-size: 1.1rem; }
+
+    /* ─── Info Rows ─── */
+    .info-rows { padding: 4px 0; }
+
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 13px 22px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .info-row:last-child { border-bottom: none; }
+
+    .info-label {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      min-width: 110px;
+      padding-top: 2px;
+    }
+
+    .info-val {
+      font-size: 0.95rem;
+      color: var(--text);
+      font-weight: 400;
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .info-val.mono {
+      font-family: monospace;
+      font-size: 0.82rem;
+      background: var(--bg);
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: var(--text-muted);
+    }
+
+    /* ─── Edit Form ─── */
+    .edit-form { padding: 18px 22px; display: none; }
+    .edit-form.open { display: block; }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.83rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      background: var(--bg);
+      color: var(--text);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    .form-group input:focus { border-color: var(--green); background: var(--surface); }
+
+    .form-row { display: flex; gap: 10px; }
+    .form-row .form-group { flex: 1; }
+
+    .btn-save {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 11px 24px;
+      border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-save:hover { background: var(--green-light); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-cancel {
+      background: none;
+      color: var(--text-muted);
+      border: 1.5px solid var(--border);
+      padding: 11px 20px;
+      border-radius: 9px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .btn-edit-sm {
+      background: none;
+      border: 1.5px solid var(--green);
+      color: var(--green);
+      padding: 5px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-edit-sm:hover { background: var(--green-pale); }
+
+    /* ─── Orders ─── */
+    .empty-orders {
+      padding: 36px 22px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty-orders .empty-icon { font-size: 2.5rem; margin-bottom: 8px; }
+    .empty-orders p { font-size: 0.95rem; margin-bottom: 16px; }
+
+    .btn-shop {
+      display: inline-block;
+      background: var(--saffron);
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 9px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .btn-shop:hover { background: var(--saffron-light); }
+
+    .order-list { padding: 0; }
+
+    .order-item {
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .order-item:last-child { border-bottom: none; }
+
+    .order-id {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+    .order-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .order-meta { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+
+    .order-status {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .status-pending   { background: #fff3cd; color: #856404; }
+    .status-confirmed { background: #d1e7dd; color: #0f5132; }
+    .status-delivered { background: #cff4fc; color: #055160; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+
+    .order-amount {
+      font-weight: 700;
+      color: var(--green);
+      font-size: 1rem;
+    }
+
+    /* ─── Security ─── */
+    .security-row {
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .security-row:last-child { border-bottom: none; }
+
+    .security-label {
+      font-weight: 500;
+      font-size: 0.93rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .security-label small {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .provider-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      background: var(--green-pale);
+      color: var(--green);
+    }
+
+    /* ─── Toast ─── */
+    #toast {
+      position: fixed;
+      bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--green);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 999;
+      transition: transform 0.3s ease, opacity 0.3s;
+      opacity: 0;
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.error { background: var(--danger); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 600px) {
+      .profile-hero { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .profile-actions { flex-direction: row; align-items: center; width: 100%; }
+      .info-row { flex-direction: column; }
+      .info-val { text-align: left; }
+      .form-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ Navbar ═══ -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar-brand">🛒 <span>AGS</span> Store</a>
+    <div class="navbar-actions">
+      <a href="index.html" class="btn-nav">🏪 Shop</a>
+      <a href="cart.html" class="btn-nav">🛒 Cart</a>
+    </div>
+  </nav>
+
+  <!-- ═══ Loading ═══ -->
+  <div id="loading-screen">
+    <div class="spinner"></div>
+    <p>Loading your profile…</p>
+  </div>
+
+  <!-- ═══ Not Logged In ═══ -->
+  <div id="auth-gate" style="display:none">
+    <div style="font-size:3rem">🔐</div>
+    <h2>Please login first</h2>
+    <p style="color:var(--text-muted);font-size:0.95rem">Profile dekhnay ke liye login karna padega.</p>
+    <a href="login.html" class="btn-login">Login / Sign Up</a>
+  </div>
+
+  <!-- ═══ Profile Page ═══ -->
+  <div id="profile-page">
+
+    <!-- Hero Card -->
+    <div class="profile-hero">
+      <div class="avatar-wrap">
+        <div class="avatar" id="user-avatar">?</div>
+        <div class="avatar-badge">
+          <svg viewBox="0 0 24 24"><path d="M20.3 5.3l-11 11-4.6-4.6-1.4 1.4 6 6 12.4-12.4z"/></svg>
+        </div>
+      </div>
+
+      <div class="profile-info">
+        <h1 id="display-name-hero">—</h1>
+        <p class="email" id="display-email-hero">—</p>
+        <div class="profile-badges">
+          <span class="badge badge-green" id="verified-badge" style="display:none">✓ Email Verified</span>
+          <span class="badge badge-saffron">🏪 AGS Customer</span>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn-logout" id="btn-logout">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── Personal Info ─── -->
+    <div class="section-card">
+      <div class="section-head">
+        <h2><span class="icon">👤</span> Personal Info</h2>
+        <button class="btn-edit-sm" id="toggle-edit-btn">Edit</button>
+      </div>
+
+      <div class="info-rows" id="info-view">
+        <div class="info-row">
+          <span class="info-label">Full Name</span>
+          <span class="info-val" id="view-name">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Phone</span>
+          <span class="info-val" id="view-phone">Not added</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-val" id="view-email">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">User ID</span>
+          <span class="info-val mono" id="view-uid">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Joined</span>
+          <span class="info-val" id="view-joined">—</span>
+        </div>
+      </div>
+
+      <div class="edit-form" id="edit-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="input-fname" placeholder="Anuj" />
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="input-lname" placeholder="Sharma" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="input-phone" placeholder="+91 76172 63817" />
+        </div>
+        <div>
+          <button class="btn-save" id="btn-save-profile">Save Changes</button>
+          <button class="btn-cancel" id="btn-cancel-edit">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Address ─── -->
+    <div class="section-card">
+      <div class="section-head">
+        <h2><span class="icon">📍</span> Delivery Address</h2>
+        <button class="btn-edit-sm" id="toggle-address-btn">Edit</button>
+      </div>
+
+      <div class="info-rows" id="address-view">
+        <div class="info-row">
+          <span class="info-label">House / Flat</span>
+          <span class="info-val" id="view-house">Not added</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Street / Mohalla</span>
+          <span class="info-val" id="view-street">Not added</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">City</span>
+          <span class="info-val" id="view-city">Mihona</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Pincode</span>
+          <span class="info-val" id="view-pin">Not added</span>
+        </div>
+      </div>
+
+      <div class="edit-form" id="address-form">
+        <div class="form-group">
+          <label>House / Flat No.</label>
+          <input type="text" id="input-house" placeholder="e.g. Ghar no. 12" />
+        </div>
+        <div class="form-group">
+          <label>Street / Mohalla</label>
+          <input type="text" id="input-street" placeholder="e.g. RARI, Mihona" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="input-city" placeholder="Mihona" />
+          </div>
+          <div class="form-group">
+            <label>Pincode</label>
+            <input type="text" id="input-pin" placeholder="473880" />
+          </div>
+        </div>
+        <div>
+          <button class="btn-save" id="btn-save-address">Save Address</button>
+          <button class="btn-cancel" id="btn-cancel-address">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── My Orders ─── -->
+    <div class="section-card">
+      <div class="section-head">
+        <h2><span class="icon">📦</span> My Orders</h2>
+      </div>
+      <div id="orders-container">
+        <div class="empty-orders">
+          <div class="spinner" style="margin:0 auto 12px"></div>
+          <p>Loading orders…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Security ─── -->
+    <div class="section-card">
+      <div class="section-head">
+        <h2><span class="icon">🔒</span> Security</h2>
+      </div>
+      <div>
+        <div class="security-row">
+          <div class="security-label">
+            Login Method
+            <small>Aapne iss tarike se sign in kiya hai</small>
+          </div>
+          <span class="provider-badge" id="provider-badge">—</span>
+        </div>
+        <div class="security-row" id="pw-change-row" style="display:none">
+          <div class="security-label">
+            Password
+            <small>Last changed: at signup</small>
+          </div>
+          <button class="btn-edit-sm" id="btn-reset-pw">Reset Password</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /#profile-page -->
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- ═══ Firebase ═══ -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ── Firebase Config ──
+    const firebaseConfig = {
+      apiKey:            "AIzaSyD4wPx...",          // ← apna config yahan daalo
+      authDomain:        "ags-store-6afdb.firebaseapp.com",
+      projectId:         "ags-store-6afdb",
+      storageBucket:     "ags-store-6afdb.appspot.com",
+      messagingSenderId: "...",
+      appId:             "..."
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    // ── Helpers ──
+    const $  = id => document.getElementById(id);
+    const qs = s  => document.querySelector(s);
+
+    function showToast(msg, isError = false) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'show' + (isError ? ' error' : '');
+      setTimeout(() => t.className = '', 3000);
+    }
+
+    function formatDate(ts) {
+      if (!ts) return '—';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    }
+
+    function initials(name, email) {
+      if (name && name.trim()) {
+        return name.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+      }
+      return email ? email[0].toUpperCase() : '?';
+    }
+
+    // ── Auth State ──
+    onAuthStateChanged(auth, async user => {
+      $('loading-screen').style.display = 'none';
+
+      if (!user) {
+        $('auth-gate').style.display = 'flex';
+        return;
+      }
+
+      $('profile-page').style.display = 'block';
+      await loadProfile(user);
+      await loadOrders(user.uid);
+    });
+
+    // ── Load Profile ──
+    async function loadProfile(user) {
+      const name  = user.displayName || '';
+      const email = user.email || '';
+      const uid   = user.uid;
+
+      // Hero
+      const av = $('user-avatar');
+      if (user.photoURL) {
+        av.innerHTML = `<img src="${user.photoURL}" alt="avatar" />`;
+      } else {
+        av.textContent = initials(name, email);
+      }
+
+      $('display-name-hero').textContent = name || 'Customer';
+      $('display-email-hero').textContent = email;
+      $('view-name').textContent  = name || '—';
+      $('view-email').textContent = email;
+      $('view-uid').textContent   = uid;
+
+      if (user.emailVerified) $('verified-badge').style.display = 'inline-flex';
+
+      // Joined date
+      if (user.metadata?.creationTime) {
+        $('view-joined').textContent = new Date(user.metadata.creationTime)
+          .toLocaleDateString('en-IN', { day:'2-digit', month:'long', year:'numeric' });
+      }
+
+      // Provider
+      const provider = user.providerData?.[0]?.providerId || 'email';
+      const pLabels  = { 'password': '✉️ Email/Password', 'google.com': '🟢 Google', 'phone': '📱 Phone OTP' };
+      $('provider-badge').textContent = pLabels[provider] || provider;
+      if (provider === 'password') $('pw-change-row').style.display = 'flex';
+
+      // Firestore extra data
+      try {
+        const snap = await getDoc(doc(db, 'users', uid));
+        if (snap.exists()) {
+          const d = snap.data();
+          if (d.phone)   $('view-phone').textContent  = d.phone;
+          if (d.house)   $('view-house').textContent  = d.house;
+          if (d.street)  $('view-street').textContent = d.street;
+          if (d.city)    $('view-city').textContent   = d.city;
+          if (d.pin)     $('view-pin').textContent    = d.pin;
+
+          // Pre-fill edit inputs
+          const parts = (d.displayName || name).split(' ');
+          $('input-fname').value  = parts[0] || '';
+          $('input-lname').value  = parts.slice(1).join(' ') || '';
+          $('input-phone').value  = d.phone  || '';
+          $('input-house').value  = d.house  || '';
+          $('input-street').value = d.street || '';
+          $('input-city').value   = d.city   || 'Mihona';
+          $('input-pin').value    = d.pin    || '';
+        } else {
+          // Pre-fill name from Auth
+          const parts = name.split(' ');
+          $('input-fname').value = parts[0] || '';
+          $('input-lname').value = parts.slice(1).join(' ') || '';
+          $('input-city').value  = 'Mihona';
+        }
+      } catch(e) {
+        console.log('Firestore fetch error:', e);
+      }
+    }
+
+    // ── Load Orders ──
+    async function loadOrders(uid) {
+      const container = $('orders-container');
+      try {
+        const q    = query(collection(db, 'orders'), where('uid', '==', uid), orderBy('createdAt', 'desc'));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          container.innerHTML = `
+            <div class="empty-orders">
+              <div class="empty-icon">🛒</div>
+              <p>Aapne abhi tak koi order nahi diya.</p>
+              <a href="index.html" class="btn-shop">Shop karo</a>
+            </div>`;
+          return;
+        }
+
+        let html = '<div class="order-list">';
+        snap.forEach(d => {
+          const o = d.data();
+          const statusClass = {
+            pending: 'status-pending', confirmed: 'status-confirmed',
+            delivered: 'status-delivered', cancelled: 'status-cancelled'
+          }[o.status] || 'status-pending';
+
+          const statusLabel = {
+            pending: '⏳ Pending', confirmed: '✅ Confirmed',
+            delivered: '📬 Delivered', cancelled: '❌ Cancelled'
+          }[o.status] || '⏳ Pending';
+
+          html += `
+            <div class="order-item">
+              <div>
+                <div class="order-title">${o.itemsSummary || 'Order'}</div>
+                <div class="order-meta">${formatDate(o.createdAt)} &nbsp;·&nbsp; ${o.itemCount || 1} item(s)</div>
+                <div class="order-id">${d.id}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+                <span class="order-status ${statusClass}">${statusLabel}</span>
+                <span class="order-amount">₹${o.total || 0}</span>
+              </div>
+            </div>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+
+      } catch(e) {
+        // Index not ready ya orders collection nahi hai
+        container.innerHTML = `
+          <div class="empty-orders">
+            <div class="empty-icon">🛒</div>
+            <p>Koi order nahi mila.</p>
+            <a href="index.html" class="btn-shop">Shop karo</a>
+          </div>`;
+      }
+    }
+
+    // ── Edit Personal Info Toggle ──
+    $('toggle-edit-btn').addEventListener('click', () => {
+      const form = $('edit-form');
+      const open = form.classList.toggle('open');
+      $('toggle-edit-btn').textContent = open ? 'Cancel' : 'Edit';
+    });
+    $('btn-cancel-edit').addEventListener('click', () => {
+      $('edit-form').classList.remove('open');
+      $('toggle-edit-btn').textContent = 'Edit';
+    });
+
+    // ── Save Personal Info ──
+    $('btn-save-profile').addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const fname = $('input-fname').value.trim();
+      const lname = $('input-lname').value.trim();
+      const phone = $('input-phone').value.trim();
+      const name  = [fname, lname].filter(Boolean).join(' ');
+
+      if (!fname) { showToast('Naam daalna zaroori hai', true); return; }
+
+      const btn = $('btn-save-profile');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      try {
+        await updateProfile(user, { displayName: name });
+        await setDoc(doc(db, 'users', user.uid), { displayName: name, phone }, { merge: true });
+
+        $('display-name-hero').textContent = name;
+        $('view-name').textContent         = name;
+        $('view-phone').textContent        = phone || 'Not added';
+        $('user-avatar').textContent       = initials(name, user.email);
+
+        $('edit-form').classList.remove('open');
+        $('toggle-edit-btn').textContent = 'Edit';
+        showToast('✅ Profile update ho gayi!');
+      } catch(e) {
+        showToast('Error: ' + e.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+      }
+    });
+
+    // ── Edit Address Toggle ──
+    $('toggle-address-btn').addEventListener('click', () => {
+      const form = $('address-form');
+      const open = form.classList.toggle('open');
+      $('toggle-address-btn').textContent = open ? 'Cancel' : 'Edit';
+    });
+    $('btn-cancel-address').addEventListener('click', () => {
+      $('address-form').classList.remove('open');
+      $('toggle-address-btn').textContent = 'Edit';
+    });
+
+    // ── Save Address ──
+    $('btn-save-address').addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const house  = $('input-house').value.trim();
+      const street = $('input-street').value.trim();
+      const city   = $('input-city').value.trim() || 'Mihona';
+      const pin    = $('input-pin').value.trim();
+
+      const btn = $('btn-save-address');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      try {
+        await setDoc(doc(db, 'users', user.uid), { house, street, city, pin }, { merge: true });
+
+        $('view-house').textContent  = house  || 'Not added';
+        $('view-street').textContent = street || 'Not added';
+        $('view-city').textContent   = city;
+        $('view-pin').textContent    = pin    || 'Not added';
+
+        $('address-form').classList.remove('open');
+        $('toggle-address-btn').textContent = 'Edit';
+        showToast('✅ Address save ho gaya!');
+      } catch(e) {
+        showToast('Error: ' + e.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save Address';
+      }
+    });
+
+    // ── Reset Password ──
+    $('btn-reset-pw')?.addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user?.email) return;
+      try {
+        await sendPasswordResetEmail(auth, user.email);
+        showToast('📧 Password reset email bhej diya: ' + user.email);
+      } catch(e) {
+        showToast('Error: ' + e.message, true);
+      }
+    });
+
+    // ── Logout ──
+    $('btn-logout').addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'index.html';
+    });
+
+  </script>
+</body>
+</html>
