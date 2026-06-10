@@ -527,7 +527,7 @@
         /* Try with orderBy first (needs composite index) */
         const q = query(
           collection(db, 'orders'),
-          where('uid', '==', uid),
+          where('customerUID', '==', uid),
           orderBy('createdAt', 'desc')
         );
         const snap = await getDocs(q);
@@ -535,7 +535,7 @@
       } catch (e) {
         /* Fallback: without orderBy, sort client-side */
         try {
-          const q2 = query(collection(db, 'orders'), where('uid', '==', uid));
+          const q2 = query(collection(db, 'orders'), where('customerUID', '==', uid));
           const snap2 = await getDocs(q2);
           allOrders = snap2.docs
             .map(d => ({ id: d.id, ...d.data() }))
@@ -553,6 +553,23 @@
             </div>`;
           return;
         }
+      }
+
+      /* Fallback: kuch purane orders 'uid' field se save hue ho sakte hain */
+      if (allOrders.length === 0) {
+        try {
+          const q3 = query(collection(db, 'orders'), where('uid', '==', uid));
+          const snap3 = await getDocs(q3);
+          if (!snap3.empty) {
+            allOrders = snap3.docs
+              .map(d => ({ id: d.id, ...d.data() }))
+              .sort((a, b) => {
+                const ta = a.createdAt?.toDate?.() || new Date(a.createdAt || 0);
+                const tb = b.createdAt?.toDate?.() || new Date(b.createdAt || 0);
+                return tb - ta;
+              });
+          }
+        } catch (_) { /* ignore */ }
       }
 
       if (allOrders.length === 0) {
