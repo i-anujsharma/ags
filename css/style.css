@@ -545,3 +545,27 @@ body.dark #global-loader { background: rgba(13,31,22,.85); }
 @media (max-width: 400px) {
   .auth-card { padding: 28px 20px; }
 }
+
+/* ── Buy Now + Add to Cart two-button layout ── */
+.product-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.btn-buy-now {
+  padding: 10px 4px;
+  background: var(--saffron, #e86c1a);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-buy-now:hover {
+  background: #c55910;
+}
