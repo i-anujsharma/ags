@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — All Orders | AGS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #1a7a4a; --green-light: #e8f5ee;
+      --saffron: #e86c1a; --saffron-light: #fff4ec;
+      --dark: #1a1a1a; --gray: #6b7280; --border: #e5e7eb;
+      --bg: #f0f2f5; --white: #ffffff;
+      --radius: 10px; --shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--dark); }
+
+    /* TOPBAR */
+    .topbar { background: var(--dark); padding: 14px 24px; display: flex; align-items: center; gap: 16px; }
+    .topbar .logo { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 800; color: white; text-decoration: none; }
+    .topbar .admin-tag { background: var(--saffron); color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+    .topbar .user-info { margin-left: auto; color: rgba(255,255,255,0.7); font-size: 0.82rem; }
+
+    /* STATS BAR */
+    .stats-bar { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+    @media (max-width: 768px) { .stats-bar { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; }
+    .stat-card .num { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; }
+    .stat-card .label { font-size: 0.78rem; color: var(--gray); margin-top: 2px; }
+    .stat-card.total .num { color: var(--green); }
+    .stat-card.revenue .num { color: var(--saffron); }
+
+    /* MAIN */
+    .page-wrap { max-width: 1200px; margin: 0 auto 40px; padding: 0 20px; }
+
+    /* FILTER BAR */
+    .filter-bar { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px 18px; margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .filter-bar input[type="text"] { flex: 1; min-width: 200px; padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; }
+    .filter-bar input:focus { outline: none; border-color: var(--green); }
+    .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ftab { padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: white; color: var(--dark); transition: all 0.15s; }
+    .ftab.active, .ftab:hover { background: var(--green); color: white; border-color: var(--green); }
+
+    /* TABLE */
+    .table-wrap { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--dark); }
+    thead th { color: white; padding: 12px 14px; text-align: left; font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    tbody tr:hover { background: var(--green-light); }
+    td { padding: 12px 14px; font-size: 0.85rem; vertical-align: middle; }
+    .order-id-cell { font-family: monospace; font-size: 0.78rem; color: var(--gray); }
+    .customer-cell .name { font-weight: 600; }
+    .customer-cell .phone { color: var(--gray); font-size: 0.78rem; }
+    .items-cell .item-tag { background: var(--bg); padding: 2px 7px; border-radius: 4px; font-size: 0.75rem; display: inline-block; margin: 1px; }
+    .amount-cell { font-weight: 700; color: var(--green); }
+
+    /* STATUS BADGE */
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+    .s-Pending    { background: #fef3c7; color: #92400e; }
+    .s-Confirmed  { background: #dbeafe; color: #1e40af; }
+    .s-Shipped    { background: #ede9fe; color: #5b21b6; }
+    .s-Delivered  { background: #dcfce7; color: #166534; }
+    .s-Cancelled  { background: #fee2e2; color: #991b1b; }
+
+    /* STATUS DROPDOWN */
+    .status-select { padding: 5px 8px; border: 1.5px solid var(--border); border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; background: white; }
+    .status-select:focus { outline: none; border-color: var(--green); }
+
+    /* EXPAND ROW */
+    .expand-btn { background: none; border: none; cursor: pointer; color: var(--green); font-size: 1rem; padding: 4px; }
+    .detail-row { display: none; background: #f8fffe; }
+    .detail-row td { padding: 16px 20px; }
+    .detail-row.open { display: table-row; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .detail-grid { grid-template-columns: 1fr; } }
+    .detail-sec h4 { font-size: 0.8rem; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .detail-sec p { font-size: 0.88rem; margin-bottom: 4px; }
+    .ditem { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+
+    /* WHATSAPP BTN */
+    .wa-btn { background: #25d366; color: white; border: none; padding: 5px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+
+    .loading { text-align: center; padding: 40px; color: var(--gray); }
+    .access-denied { max-width: 500px; margin: 60px auto; text-align: center; padding: 40px; background: white; border-radius: 16px; box-shadow: var(--shadow); }
+    .access-denied h2 { font-family: 'Syne', sans-serif; margin-bottom: 8px; }
+
+    /* TOAST */
+    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: white; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; display: none; z-index: 9999; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="logo" href="index.html">🛒 AGS</a>
+  <span class="admin-tag">ADMIN</span>
+  <span class="user-info" id="admin-email"></span>
+</div>
+
+<div id="access-denied" class="access-denied" style="display:none;">
+  <div style="font-size:3rem; margin-bottom:12px;">🔒</div>
+  <h2>Access Denied</h2>
+  <p style="color:#6b7280; margin-bottom:16px;">This page is only for the AGS admin.</p>
+  <a href="index.html" style="color:#1a7a4a; font-weight:700;">← Back to Store</a>
+</div>
+
+<div id="admin-content" style="display:none;">
+
+  <!-- STATS -->
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-card total"><div class="num" id="stat-total">0</div><div class="label">Total Orders</div></div>
+    <div class="stat-card revenue"><div class="num" id="stat-revenue">₹0</div><div class="label">Total Revenue</div></div>
+    <div class="stat-card"><div class="num" id="stat-pending" style="color:#92400e">0</div><div class="label">Pending</div></div>
+    <div class="stat-card"><div class="num" id="stat-shipped" style="color:#5b21b6">0</div><div class="label">Shipped</div></div>
+    <div class="stat-card"><div class="num" id="stat-delivered" style="color:#166534">0</div><div class="label">Delivered</div></div>
+  </div>
+
+  <div class="page-wrap">
+    <!-- FILTERS -->
+    <div class="filter-bar">
+      <input type="text" id="search-input" placeholder="🔍 Search by name, phone, or order ID…" oninput="filterOrders()" />
+      <div class="filter-tabs">
+        <div class="ftab active" onclick="setFilter('All', this)">All</div>
+        <div class="ftab" onclick="setFilter('Pending', this)">Pending</div>
+        <div class="ftab" onclick="setFilter('Confirmed', this)">Confirmed</div>
+        <div class="ftab" onclick="setFilter('Shipped', this)">Shipped</div>
+        <div class="ftab" onclick="setFilter('Delivered', this)">Delivered</div>
+        <div class="ftab" onclick="setFilter('Cancelled', this)">Cancelled</div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Update</th>
+            <th>WhatsApp</th>
+          </tr>
+        </thead>
+        <tbody id="orders-tbody">
+          <tr><td colspan="9" class="loading">⏳ Loading orders…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+  import { getAllOrders, updateOrderStatus } from "./order.js";
+  import { auth } from "./firebase-config.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // ── CHANGE THIS TO YOUR ADMIN EMAIL ──────────────────────
+  const ADMIN_EMAIL = "anuj7harma@gmail.com";
+  // ─────────────────────────────────────────────────────────
+
+  let allOrders = [];
+  let currentFilter = "All";
+
+  function formatDate(ts) {
+    if (!ts) return "—";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+
+  function updateStats(orders) {
+    document.getElementById("stat-total").textContent = orders.length;
+    document.getElementById("stat-revenue").textContent = "₹" + orders.reduce((s, o) => s + (o.totalAmount || 0), 0);
+    document.getElementById("stat-pending").textContent = orders.filter(o => o.status === "Pending").length;
+    document.getElementById("stat-shipped").textContent = orders.filter(o => o.status === "Shipped").length;
+    document.getElementById("stat-delivered").textContent = orders.filter(o => o.status === "Delivered").length;
+  }
+
+  function waLink(phone, orderId, status) {
+    const msg = encodeURIComponent(`Hello! Your AGS order #${orderId.slice(0,8).toUpperCase()} is now *${status}*. Thank you for shopping with Ankit General Store! 🛒`);
+    return `https://wa.me/91${phone}?text=${msg}`;
+  }
+
+  function renderOrders(orders) {
+    const tbody = document.getElementById("orders-tbody");
+    if (orders.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" class="loading">No orders found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = orders.map((order, idx) => {
+      const items = order.items || [];
+      const itemTags = items.slice(0, 2).map(i => `<span class="item-tag">${i.name} ×${i.qty}</span>`).join("") +
+                       (items.length > 2 ? `<span class="item-tag">+${items.length - 2} more</span>` : "");
+
+      return `
+        <tr id="row-${idx}">
+          <td><button class="expand-btn" onclick="toggleDetail(${idx})" title="View details">▶</button></td>
+          <td class="order-id-cell">${order.id.slice(0, 10).toUpperCase()}</td>
+          <td class="customer-cell">
+            <div class="name">${order.userName || "—"}</div>
+            <div class="phone">📞 ${order.phone || "—"}</div>
+          </td>
+          <td class="items-cell">${itemTags}</td>
+          <td class="amount-cell">₹${order.totalAmount || 0}</td>
+          <td style="font-size:0.78rem; color:var(--gray);">${formatDate(order.createdAt)}</td>
+          <td><span class="status-badge s-${order.status}">${order.status}</span></td>
+          <td>
+            <select class="status-select" onchange="changeStatus('${order.id}', this.value, this)">
+              <option value="Pending"   ${order.status==="Pending"?"selected":""}>Pending</option>
+              <option value="Confirmed" ${order.status==="Confirmed"?"selected":""}>Confirmed</option>
+              <option value="Shipped"   ${order.status==="Shipped"?"selected":""}>Shipped</option>
+              <option value="Delivered" ${order.status==="Delivered"?"selected":""}>Delivered</option>
+              <option value="Cancelled" ${order.status==="Cancelled"?"selected":""}>Cancelled</option>
+            </select>
+          </td>
+          <td>
+            <a class="wa-btn" href="${waLink(order.phone, order.id, order.status)}" target="_blank">
+              💬 WA
+            </a>
+          </td>
+        </tr>
+        <tr class="detail-row" id="detail-${idx}">
+          <td colspan="9">
+            <div class="detail-grid">
+              <div class="detail-sec">
+                <h4>📍 Delivery Address</h4>
+                <p><strong>${order.address?.name || order.userName}</strong></p>
+                <p>${order.address?.address || "—"}</p>
+                <p>${order.address?.city || "—"}, ${order.address?.pincode || "—"}</p>
+                <p>${order.address?.state || "—"}</p>
+                <p>📞 ${order.phone}</p>
+              </div>
+              <div class="detail-sec">
+                <h4>🛒 Order Items</h4>
+                ${items.map(i => `<div class="ditem"><span>${i.name} ×${i.qty}</span><span>₹${i.price * i.qty}</span></div>`).join("")}
+                <div class="ditem" style="font-weight:700;margin-top:4px;"><span>Total</span><span>₹${order.totalAmount}</span></div>
+              </div>
+            </div>
+          </td>
+        </tr>`;
+    }).join("");
+  }
+
+  window.toggleDetail = function(idx) {
+    const row = document.getElementById(`detail-${idx}`);
+    const btn = document.querySelector(`#row-${idx} .expand-btn`);
+    if (row.classList.contains("open")) {
+      row.classList.remove("open");
+      btn.textContent = "▶";
+    } else {
+      row.classList.add("open");
+      btn.textContent = "▼";
+    }
+  };
+
+  window.changeStatus = async function(orderId, newStatus, selectEl) {
+    try {
+      await updateOrderStatus(orderId, newStatus);
+      // Update local cache
+      const o = allOrders.find(x => x.id === orderId);
+      if (o) o.status = newStatus;
+      updateStats(allOrders);
+      showToast(`✅ Order updated to "${newStatus}"`);
+    } catch (e) {
+      showToast("❌ Failed to update status.");
+    }
+  };
+
+  let filterValue = "All";
+  window.setFilter = function(val, el) {
+    filterValue = val;
+    document.querySelectorAll(".ftab").forEach(t => t.classList.remove("active"));
+    el.classList.add("active");
+    filterOrders();
+  };
+
+  window.filterOrders = function() {
+    const search = document.getElementById("search-input").value.toLowerCase();
+    const filtered = allOrders.filter(o => {
+      const matchStatus = filterValue === "All" || o.status === filterValue;
+      const matchSearch = !search ||
+        (o.userName || "").toLowerCase().includes(search) ||
+        (o.phone || "").includes(search) ||
+        o.id.toLowerCase().includes(search);
+      return matchStatus && matchSearch;
+    });
+    renderOrders(filtered);
+  };
+
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.style.display = "block";
+    setTimeout(() => (t.style.display = "none"), 3000);
+  }
+
+  // ── AUTH GUARD ────────────────────────────────────────────
+  onAuthStateChanged(auth, async (user) => {
+    if (!user || user.email !== ADMIN_EMAIL) {
+      document.getElementById("access-denied").style.display = "block";
+      return;
+    }
+
+    document.getElementById("admin-content").style.display = "block";
+    document.getElementById("admin-email").textContent = user.email;
+
+    try {
+      allOrders = await getAllOrders();
+      updateStats(allOrders);
+      renderOrders(allOrders);
+    } catch (e) {
+      document.getElementById("orders-tbody").innerHTML =
+        `<tr><td colspan="9" class="loading">❌ Error loading orders: ${e.message}</td></tr>`;
+    }
+  });
+</script>
+</body>
+</html>

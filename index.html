@@ -1,220 +1,235 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ankit General Store — AGS</title>
-  <meta name="description" content="Shop groceries, snacks, beverages, personal care and household items online at Ankit General Store, RARI Mihona.">
+  <meta name="description"
+    content="Shop groceries, snacks, beverages, personal care and household items online at Ankit General Store, RARI Mihona.">
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
 </head>
+
 <body>
 
-<!-- ── Navbar ─────────────────────────────────────────────── -->
-<nav class="navbar">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="logo-icon">🛒</div>
-      <span>AGS</span>
-    </a>
-    <ul class="nav-links">
-      <li><a href="index.html" class="active">Home</a></li>
-      <li><a href="products.html">Products</a></li>
-      <li><a href="contact.html">Contact</a></li>
-      <li id="nav-auth"><a href="login.html">Login</a></li>
-      <li id="nav-admin" style="display:none"><a href="admin.html">Admin</a></li>
-      <li>
-        <a href="cart.html" class="nav-cart">
-          🛒 Cart
-          <span class="cart-badge" style="display:none">0</span>
-        </a>
-      </li>
-    </ul>
-    <button class="dark-toggle" title="Toggle dark mode">🌙</button>
-    <button class="hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
-<nav class="nav-mobile" id="nav-mobile">
-  <a href="index.html">🏠 Home</a>
-  <a href="products.html">📦 Products</a>
-  <a href="cart.html">🛒 Cart</a>
-  <a href="contact.html">📞 Contact</a>
-  <a href="login.html" id="mob-auth">👤 Login</a>
-  <a href="profile.html" id="mob-profile" style="display:none">👤 Profile</a>
-  <a href="admin.html" id="mob-admin" style="display:none">⚙ Admin</a>
-</nav>
-
-<!-- ── Hero ───────────────────────────────────────────────── -->
-<section class="hero">
-  <div class="hero-content fade-in">
-    <h1>🛒 Ankit General Store</h1>
-    <p>Your neighbourhood store, now online. Fresh groceries, snacks, beverages &amp; daily essentials — delivered to your door.</p>
-    <div class="hero-btns">
-      <a href="products.html" class="btn btn-primary">Shop Now →</a>
-      <a href="contact.html" class="btn btn-outline-white">Contact Us</a>
+  <!-- ── Navbar ─────────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">🛒</div>
+        <span>AGS</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li id="nav-auth"><a href="login.html">Login</a></li>
+        <li id="nav-admin" style="display:none"><a href="admin.html">Admin</a></li>
+        <li>
+          <a href="cart.html" class="nav-cart">
+            🛒 Cart
+            <span class="cart-badge" style="display:none">0</span>
+          </a>
+        </li>
+      </ul>
+      <button class="dark-toggle" title="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-  </div>
-</section>
+  </nav>
+  <nav class="nav-mobile" id="nav-mobile">
+    <a href="index.html">🏠 Home</a>
+    <a href="products.html">📦 Products</a>
+    <a href="cart.html">🛒 Cart</a>
+    <a href="contact.html">📞 Contact</a>
+    <a href="login.html" id="mob-auth">👤 Login</a>
+    <a href="profile.html" id="mob-profile" style="display:none">👤 Profile</a>
+    <a href="admin.html" id="mob-admin" style="display:none">⚙ Admin</a>
+  </nav>
 
-<!-- ── Category Quick Links ───────────────────────────────── -->
-<section class="section-sm" style="background:var(--surface); border-bottom:1px solid var(--border);">
-  <div class="container">
-    <div class="cat-chips stagger" id="home-cats"></div>
-  </div>
-</section>
-
-<!-- ── Featured Products ──────────────────────────────────── -->
-<section class="section">
-  <div class="container">
-    <h2 class="section-title">⭐ Featured Products</h2>
-    <p class="section-sub">Handpicked favourites — our bestsellers!</p>
-    <div class="products-grid stagger" id="featured-grid">
-      <!-- filled by JS -->
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
-      <div class="skeleton-card"></div>
-    </div>
-    <div style="text-align:center;margin-top:36px;">
-      <a href="products.html" class="btn btn-green">View All Products →</a>
-    </div>
-  </div>
-</section>
-
-<!-- ── Why AGS ────────────────────────────────────────────── -->
-<section class="section" style="background:var(--surface);">
-  <div class="container">
-    <h2 class="section-title">Why Shop at AGS?</h2>
-    <p class="section-sub">Everything you need, right here.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;" class="stagger">
-      <div style="text-align:center;padding:28px 20px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
-        <div style="font-size:2.5rem;margin-bottom:12px">🏪</div>
-        <h3 style="margin-bottom:8px">Local &amp; Trusted</h3>
-        <p style="color:var(--text-2);font-size:.9rem">Serving RARI, Mihona community for years.</p>
-      </div>
-      <div style="text-align:center;padding:28px 20px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
-        <div style="font-size:2.5rem;margin-bottom:12px">📦</div>
-        <h3 style="margin-bottom:8px">Wide Selection</h3>
-        <p style="color:var(--text-2);font-size:.9rem">40+ products across 6 categories.</p>
-      </div>
-      <div style="text-align:center;padding:28px 20px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
-        <div style="font-size:2.5rem;margin-bottom:12px">💬</div>
-        <h3 style="margin-bottom:8px">WhatsApp Orders</h3>
-        <p style="color:var(--text-2);font-size:.9rem">Order instantly via WhatsApp — no payment hassle.</p>
-      </div>
-      <div style="text-align:center;padding:28px 20px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
-        <div style="font-size:2.5rem;margin-bottom:12px">💰</div>
-        <h3 style="margin-bottom:8px">Best Prices</h3>
-        <p style="color:var(--text-2);font-size:.9rem">Competitive pricing on all daily essentials.</p>
+  <!-- ── Hero ───────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-content fade-in">
+      <h1>🛒 Ankit General Store</h1>
+      <p>Your neighbourhood store, now online. Fresh groceries, snacks, beverages &amp; daily essentials — delivered to
+        your door.</p>
+      <div class="hero-btns">
+        <a href="products.html" class="btn btn-primary">Shop Now →</a>
+        <a href="contact.html" class="btn btn-outline-white">Contact Us</a>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ── Footer ────────────────────────────────────────────── -->
-<footer class="footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <h3>🛒 Ankit General Store</h3>
-        <p>Your trusted neighbourhood shop in RARI, Mihona. Groceries, snacks, beverages &amp; daily essentials at the best prices.</p>
+  <!-- ── Category Quick Links ───────────────────────────────── -->
+  <section class="section-sm" style="background:var(--surface); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="cat-chips stagger" id="home-cats"></div>
+    </div>
+  </section>
+
+  <!-- ── Featured Products ──────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">⭐ Featured Products</h2>
+      <p class="section-sub">Handpicked favourites — our bestsellers!</p>
+      <div class="products-grid stagger" id="featured-grid">
+        <!-- filled by JS -->
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
       </div>
-      <div>
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="products.html">Products</a></li>
-          <li><a href="cart.html">Cart</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Account</h4>
-        <ul>
-          <li><a href="login.html">Login</a></li>
-          <li><a href="signup.html">Sign Up</a></li>
-          <li><a href="profile.html">Profile</a></li>
-          <li><a href="forgot-password.html">Reset Password</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Contact</h4>
-        <ul>
-          <li><a href="tel:7617263817">📞 7617263817</a></li>
-          <li><a href="https://wa.me/917617263817" target="_blank">💬 WhatsApp</a></li>
-          <li><a href="#">📍 RARI, Mihona</a></li>
-        </ul>
+      <div style="text-align:center;margin-top:36px;">
+        <a href="products.html" class="btn btn-green">View All Products →</a>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>© 2025 Ankit General Store (AGS) · RARI, Mihona · All rights reserved</p>
+  </section>
+
+  <!-- ── Why AGS ────────────────────────────────────────────── -->
+  <section class="section" style="background:var(--surface);">
+    <div class="container">
+      <h2 class="section-title">Why Shop at AGS?</h2>
+      <p class="section-sub">Everything you need, right here.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;" class="stagger">
+        <div
+          style="text-align:center;padding:28px 20px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:2.5rem;margin-bottom:12px">🏪</div>
+          <h3 style="margin-bottom:8px">Local &amp; Trusted</h3>
+          <p style="color:var(--text-2);font-size:.9rem">Serving RARI, Mihona community for years.</p>
+        </div>
+        <div
+          style="text-align:center;padding:28px 20px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:2.5rem;margin-bottom:12px">📦</div>
+          <h3 style="margin-bottom:8px">Wide Selection</h3>
+          <p style="color:var(--text-2);font-size:.9rem">40+ products across 6 categories.</p>
+        </div>
+        <div
+          style="text-align:center;padding:28px 20px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:2.5rem;margin-bottom:12px">💬</div>
+          <h3 style="margin-bottom:8px">WhatsApp Orders</h3>
+          <p style="color:var(--text-2);font-size:.9rem">Order instantly via WhatsApp — no payment hassle.</p>
+        </div>
+        <div
+          style="text-align:center;padding:28px 20px;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)">
+          <div style="font-size:2.5rem;margin-bottom:12px">💰</div>
+          <h3 style="margin-bottom:8px">Best Prices</h3>
+          <p style="color:var(--text-2);font-size:.9rem">Competitive pricing on all daily essentials.</p>
+        </div>
+      </div>
     </div>
-  </div>
-</footer>
+  </section>
 
-<!-- WhatsApp float button -->
-<a href="https://wa.me/917617263817" class="wa-float" target="_blank" title="Chat on WhatsApp">💬</a>
+  <!-- ── Footer ────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>🛒 Ankit General Store</h3>
+          <p>Your trusted neighbourhood shop in RARI, Mihona. Groceries, snacks, beverages &amp; daily essentials at the
+            best prices.</p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Account</h4>
+          <ul>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="signup.html">Sign Up</a></li>
+            <li><a href="profile.html">Profile</a></li>
+            <li><a href="forgot-password.html">Reset Password</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="tel:7617263817">📞 7617263817</a></li>
+            <li><a href="https://wa.me/917617263817" target="_blank">💬 WhatsApp</a></li>
+            <li><a href="#">📍 RARI, Mihona</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Ankit General Store (AGS) · RARI, Mihona · All rights reserved</p>
+      </div>
+    </div>
+  </footer>
 
-<script type="module">
-  import { auth, ADMIN_EMAIL } from "./js/firebase.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { fetchFeatured, productCardHTML, attachCartListeners, CATEGORIES } from "./js/products.js";
-  import { updateCartBadge, initDarkMode, showToast } from "./js/utils.js";
-  import { logoutUser } from "./js/auth.js";
+  <!-- WhatsApp float button -->
+  <a href="https://wa.me/917617263817" class="wa-float" target="_blank" title="Chat on WhatsApp">💬</a>
 
-  initDarkMode();
-  updateCartBadge();
+  <script type="module">
+    import { auth, ADMIN_EMAIL } from "./js/firebase.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { fetchFeatured, productCardHTML, attachCartListeners, CATEGORIES } from "./js/products.js";
+    import { updateCartBadge, initDarkMode, showToast } from "./js/utils.js";
+    import { logoutUser } from "./js/auth.js";
+    import { buyNow } from "./order.js";
 
-  // Hamburger
-  const ham = document.getElementById("hamburger");
-  const mob = document.getElementById("nav-mobile");
-  ham?.addEventListener("click", () => mob?.classList.toggle("open"));
+    window.addToCart = function (product) { /* ... code from snippet ... */ };
+    window.buyNowProduct = function (product) { buyNow(product); };
 
-  // Category chips
-  const chipWrap = document.getElementById("home-cats");
-  CATEGORIES.forEach(cat => {
-    if (cat === "All") return;
-    const icons = { Grocery:"🌾", Snacks:"🍿", Beverages:"🥤", "Personal Care":"🧴", "Household Items":"🏠", Stationery:"✏️" };
-    const a = document.createElement("a");
-    a.href = `products.html?cat=${encodeURIComponent(cat)}`;
-    a.className = "chip";
-    a.textContent = (icons[cat] || "") + " " + cat;
-    chipWrap.appendChild(a);
-  });
+    initDarkMode();
+    updateCartBadge();
 
-  // Auth state
-  onAuthStateChanged(auth, user => {
-    const navAuth = document.getElementById("nav-auth");
-    const mobAuth = document.getElementById("mob-auth");
-    const mobProfile = document.getElementById("mob-profile");
-    const navAdmin = document.getElementById("nav-admin");
-    const mobAdmin = document.getElementById("mob-admin");
-    if (user) {
-      navAuth.innerHTML = `<a href="profile.html">👤 ${user.displayName || "Profile"}</a>`;
-      if (mobAuth) mobAuth.style.display = "none";
-      if (mobProfile) mobProfile.style.display = "block";
-      if (user.email === ADMIN_EMAIL) {
-        navAdmin.style.display = "block";
-        if (mobAdmin) mobAdmin.style.display = "block";
+    // Hamburger
+    const ham = document.getElementById("hamburger");
+    const mob = document.getElementById("nav-mobile");
+    ham?.addEventListener("click", () => mob?.classList.toggle("open"));
+
+    // Category chips
+    const chipWrap = document.getElementById("home-cats");
+    CATEGORIES.forEach(cat => {
+      if (cat === "All") return;
+      const icons = { Grocery: "🌾", Snacks: "🍿", Beverages: "🥤", "Personal Care": "🧴", "Household Items": "🏠", Stationery: "✏️" };
+      const a = document.createElement("a");
+      a.href = `products.html?cat=${encodeURIComponent(cat)}`;
+      a.className = "chip";
+      a.textContent = (icons[cat] || "") + " " + cat;
+      chipWrap.appendChild(a);
+    });
+
+    // Auth state
+    onAuthStateChanged(auth, user => {
+      const navAuth = document.getElementById("nav-auth");
+      const mobAuth = document.getElementById("mob-auth");
+      const mobProfile = document.getElementById("mob-profile");
+      const navAdmin = document.getElementById("nav-admin");
+      const mobAdmin = document.getElementById("mob-admin");
+      if (user) {
+        navAuth.innerHTML = `<a href="profile.html">👤 ${user.displayName || "Profile"}</a>`;
+        if (mobAuth) mobAuth.style.display = "none";
+        if (mobProfile) mobProfile.style.display = "block";
+        if (user.email === ADMIN_EMAIL) {
+          navAdmin.style.display = "block";
+          if (mobAdmin) mobAdmin.style.display = "block";
+        }
       }
-    }
-  });
+    });
 
-  // Featured products
-  const grid = document.getElementById("featured-grid");
-  try {
-    const products = await fetchFeatured();
-    if (products.length === 0) {
-      grid.innerHTML = `<p style="color:var(--text-2);grid-column:1/-1">No featured products yet. <a href="products.html" style="color:var(--green)">Browse all →</a></p>`;
-    } else {
-      grid.innerHTML = products.map(p => productCardHTML(p)).join("");
-      attachCartListeners(products);
+    // Featured products
+    const grid = document.getElementById("featured-grid");
+    try {
+      const products = await fetchFeatured();
+      if (products.length === 0) {
+        grid.innerHTML = `<p style="color:var(--text-2);grid-column:1/-1">No featured products yet. <a href="products.html" style="color:var(--green)">Browse all →</a></p>`;
+      } else {
+        grid.innerHTML = products.map(p => productCardHTML(p)).join("");
+        attachCartListeners(products);
+      }
+    } catch (e) {
+      grid.innerHTML = `<p style="color:var(--text-2);grid-column:1/-1">Could not load products. Please check your Firebase config.</p>`;
     }
-  } catch(e) {
-    grid.innerHTML = `<p style="color:var(--text-2);grid-column:1/-1">Could not load products. Please check your Firebase config.</p>`;
-  }
-</script>
+  </script>
 </body>
+
 </html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout — Ankit General Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #1a7a4a;
+      --green-light: #e8f5ee;
+      --saffron: #e86c1a;
+      --saffron-light: #fff4ec;
+      --dark: #1a1a1a;
+      --gray: #6b7280;
+      --border: #e5e7eb;
+      --bg: #f9fafb;
+      --white: #ffffff;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--dark); }
+
+    .topbar {
+      background: var(--green);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .topbar .logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; text-decoration: none; }
+    .steps { display: flex; gap: 0; margin-left: auto; }
+    .step { padding: 6px 18px; font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.6); border-bottom: 3px solid transparent; }
+    .step.active { color: white; border-bottom-color: var(--saffron); }
+
+    .checkout-wrap { max-width: 1000px; margin: 28px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+    @media (max-width: 768px) { .checkout-wrap { grid-template-columns: 1fr; } }
+
+    .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 16px; }
+    .card h2 { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+    .card h2 .badge { background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+    .form-full { margin-bottom: 14px; }
+    label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--gray); margin-bottom: 5px; }
+    input, select, textarea {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
+      border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+      transition: border 0.2s; outline: none; background: var(--white);
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--green); }
+    textarea { resize: vertical; min-height: 70px; }
+
+    .order-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: center; }
+    .order-item:last-child { border-bottom: none; }
+    .order-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; background: var(--bg); }
+    .order-item .img-placeholder { width: 60px; height: 60px; border-radius: 8px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+    .order-item .info { flex: 1; }
+    .order-item .info .name { font-weight: 600; font-size: 0.9rem; }
+    .order-item .info .meta { color: var(--gray); font-size: 0.8rem; margin-top: 3px; }
+    .order-item .price { font-weight: 700; color: var(--green); font-size: 0.95rem; white-space: nowrap; }
+
+    .price-row { display: flex; justify-content: space-between; font-size: 0.9rem; padding: 8px 0; }
+    .price-row.total { font-weight: 700; font-size: 1rem; border-top: 2px solid var(--border); margin-top: 6px; padding-top: 12px; }
+    .discount { color: #16a34a; }
+    .savings-badge { background: var(--green-light); color: var(--green); padding: 6px 12px; border-radius: 6px; font-size: 0.82rem; font-weight: 600; margin-top: 12px; text-align: center; }
+
+    .cod-badge { background: var(--saffron-light); border: 1px solid #f4aa7a; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 0.85rem; font-weight: 600; color: var(--saffron); }
+
+    .btn-place {
+      width: 100%; padding: 15px; background: var(--saffron); color: white;
+      border: none; border-radius: 10px; font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-place:hover { background: #d05a10; }
+    .btn-place:disabled { background: #ccc; cursor: not-allowed; }
+
+    #success-screen { display: none; max-width: 500px; margin: 60px auto; text-align: center; padding: 48px 24px; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .check-icon { width: 72px; height: 72px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem; }
+    #success-screen h2 { font-family: 'Syne', sans-serif; font-size: 1.5rem; margin-bottom: 8px; }
+    #success-screen p { color: var(--gray); margin-bottom: 6px; }
+    .order-id-text { font-weight: 700; color: var(--green); font-size: 0.95rem; }
+    .btn-track { display: inline-block; margin-top: 20px; padding: 12px 28px; background: var(--green); color: white; border-radius: 8px; font-weight: 700; text-decoration: none; font-family: 'Syne', sans-serif; font-size: 0.9rem; }
+    .btn-shop-more { display: inline-block; margin-top: 10px; margin-left: 10px; padding: 12px 28px; background: white; color: var(--dark); border: 2px solid var(--border); border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+
+    #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1a1a1a; color: white; padding: 12px 24px; border-radius: 8px; font-size: 0.9rem; display: none; z-index: 9999; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="logo" href="index.html">🛒 AGS</a>
+  <div class="steps">
+    <div class="step active">🏠 Address</div>
+    <div class="step active">📋 Review</div>
+    <div class="step active">✅ Confirm</div>
+  </div>
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div id="success-screen">
+  <div class="check-icon">✅</div>
+  <h2>Order Placed!</h2>
+  <p>Thank you! Your order has been received.</p>
+  <p class="order-id-text" id="placed-order-id"></p>
+  <p style="color:var(--gray);font-size:0.85rem;margin-top:8px;">
+    We'll contact you on <strong id="placed-phone"></strong> with updates.
+  </p>
+  <a href="orders.html" class="btn-track">📦 Track My Orders</a>
+  <a href="index.html" class="btn-shop-more">Continue Shopping</a>
+</div>
+
+<!-- CHECKOUT LAYOUT -->
+<div class="checkout-wrap" id="checkout-body">
+
+  <div class="left-col">
+    <div class="card">
+      <h2><span class="badge">1</span> Delivery Address</h2>
+      <div class="form-row">
+        <div>
+          <label>Full Name *</label>
+          <input type="text" id="addr-name" placeholder="Aapka naam" required />
+        </div>
+        <div>
+          <label>Mobile Number *</label>
+          <input type="tel" id="addr-phone" placeholder="10-digit number" maxlength="10" required />
+        </div>
+      </div>
+      <div class="form-full">
+        <label>Full Address (Ghar No., Gali, Landmark) *</label>
+        <textarea id="addr-street" placeholder="e.g. Near School, Main Road, RARI" required></textarea>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>City / Town *</label>
+          <input type="text" id="addr-city" placeholder="Mihona" value="Mihona" required />
+        </div>
+        <div>
+          <label>PIN Code *</label>
+          <input type="text" id="addr-pin" placeholder="6-digit PIN" maxlength="6" required />
+        </div>
+      </div>
+      <div class="form-full">
+        <label>State</label>
+        <input type="text" id="addr-state" value="Madhya Pradesh" />
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="badge">2</span> Payment Method</h2>
+      <div class="cod-badge">💵 Cash on Delivery (COD) — Delivery par pay karein</div>
+      <p style="font-size:0.85rem;color:var(--gray);">Koi online payment nahi. Delivery ke time cash mein pay karein.</p>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="card">
+      <h2>🧺 Order Summary</h2>
+      <div id="order-items-list"></div>
+      <div style="margin-top:16px;">
+        <div class="price-row">
+          <span>Subtotal (<span id="item-count">0</span> items)</span>
+          <span>₹<span id="subtotal">0</span></span>
+        </div>
+        <div class="price-row">
+          <span>Delivery Charges</span>
+          <span class="discount">FREE</span>
+        </div>
+        <div class="price-row total">
+          <span>Total Amount</span>
+          <span>₹<span id="total-amount">0</span></span>
+        </div>
+        <div class="savings-badge">🎉 Free delivery on this order!</div>
+      </div>
+    </div>
+
+    <button class="btn-place" id="place-order-btn" onclick="handlePlaceOrder()">
+      🛒 Place Order (COD)
+    </button>
+    <p style="font-size:0.75rem;color:var(--gray);text-align:center;margin-top:10px;">
+      Order place karne par aapko WhatsApp confirmation milega.
+    </p>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+  import { placeOrder } from "./js/order.js";
+  import { auth } from "./js/firebase.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  let orderItems = [];
+
+  // ─── LOAD ITEMS ─────────────────────────────────────────
+  function loadItems() {
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+
+    if (mode === "buynow") {
+      const raw = sessionStorage.getItem("buyNowItem");
+      if (raw) {
+        const item = JSON.parse(raw);
+        orderItems = [{ ...item, qty: 1 }];
+      }
+    } else {
+      orderItems = JSON.parse(localStorage.getItem("ags_cart") || "[]");
+    }
+
+    if (orderItems.length === 0) {
+      window.location.href = "index.html";
+      return;
+    }
+
+    renderOrderItems();
+  }
+
+  function renderOrderItems() {
+    const list = document.getElementById("order-items-list");
+    let subtotal = 0;
+    let html = "";
+
+    orderItems.forEach(item => {
+      const lineTotal = item.price * item.qty;
+      subtotal += lineTotal;
+      const imgHTML = item.imageURL
+        ? `<img src="${item.imageURL}" alt="${item.name}" onerror="this.style.display='none'" />`
+        : `<div class="img-placeholder">🛒</div>`;
+
+      html += `
+        <div class="order-item">
+          ${imgHTML}
+          <div class="info">
+            <div class="name">${item.name}</div>
+            <div class="meta">Qty: ${item.qty} × ₹${item.price}</div>
+          </div>
+          <div class="price">₹${lineTotal}</div>
+        </div>`;
+    });
+
+    list.innerHTML = html;
+    document.getElementById("item-count").textContent = orderItems.length;
+    document.getElementById("subtotal").textContent = subtotal;
+    document.getElementById("total-amount").textContent = subtotal;
+  }
+
+  // ─── PLACE ORDER ────────────────────────────────────────
+  window.handlePlaceOrder = async function () {
+    const name   = document.getElementById("addr-name").value.trim();
+    const phone  = document.getElementById("addr-phone").value.trim();
+    const street = document.getElementById("addr-street").value.trim();
+    const city   = document.getElementById("addr-city").value.trim();
+    const pin    = document.getElementById("addr-pin").value.trim();
+    const state  = document.getElementById("addr-state").value.trim();
+
+    if (!name || !phone || !street || !city || !pin) {
+      showToast("⚠️ Sabhi zaroori fields bharo.");
+      return;
+    }
+    if (!/^\d{10}$/.test(phone)) {
+      showToast("⚠️ 10-digit mobile number daalo.");
+      return;
+    }
+    if (!/^\d{6}$/.test(pin)) {
+      showToast("⚠️ 6-digit PIN code daalo.");
+      return;
+    }
+
+    const btn = document.getElementById("place-order-btn");
+    btn.disabled = true;
+    btn.textContent = "Order place ho raha hai…";
+
+    try {
+      const address = { name, phone, address: street, city, pincode: pin, state };
+      const orderId = await placeOrder(orderItems, address);
+
+      // Clear storage
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("mode") === "buynow") {
+        sessionStorage.removeItem("buyNowItem");
+      } else {
+        localStorage.removeItem("ags_cart");
+      }
+
+      // Show success
+      document.getElementById("checkout-body").style.display = "none";
+      document.getElementById("success-screen").style.display = "block";
+      document.getElementById("placed-order-id").textContent = "Order ID: " + orderId.slice(0, 12).toUpperCase();
+      document.getElementById("placed-phone").textContent = phone;
+
+    } catch (err) {
+      console.error("Order error:", err);
+      showToast("❌ Order fail hua. Dobara try karo.");
+      btn.disabled = false;
+      btn.textContent = "🛒 Place Order (COD)";
+    }
+  };
+
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.style.display = "block";
+    setTimeout(() => (t.style.display = "none"), 3000);
+  }
+
+  loadItems();
+</script>
+</body>
+</html>

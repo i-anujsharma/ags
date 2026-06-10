@@ -1,0 +1,235 @@
+<!--
+  ══════════════════════════════════════════════════════════
+  AGS — PRODUCT CARD WITH "ADD TO CART" + "BUY NOW" BUTTONS
+  
+  STEP 1: In your existing index.html or products HTML,
+          find where you render each product card.
+          Replace your current button with the two buttons below.
+  
+  STEP 2: Add the CSS block to your <style> tag.
+  
+  STEP 3: Add the <script type="module"> block at the
+          bottom of your <body>, replacing your old cart JS.
+  ══════════════════════════════════════════════════════════
+-->
+
+<!-- ════════════════════════════════════
+     PART A: CSS — add to your <style>
+     ════════════════════════════════════ -->
+<style>
+/* Product Card Action Buttons */
+.product-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-add-cart {
+  padding: 10px 4px;
+  background: #e8f5ee;
+  color: #1a7a4a;
+  border: 2px solid #1a7a4a;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.btn-add-cart:hover {
+  background: #1a7a4a;
+  color: white;
+}
+
+/* "Added" state when item already in cart */
+.btn-add-cart.in-cart {
+  background: #1a7a4a;
+  color: white;
+}
+
+.btn-buy-now {
+  padding: 10px 4px;
+  background: #e86c1a;
+  color: white;
+  border: 2px solid #e86c1a;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.btn-buy-now:hover {
+  background: #c55910;
+  border-color: #c55910;
+}
+
+/* Toast notification */
+#ags-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  z-index: 9999;
+  display: none;
+  max-width: 90vw;
+  text-align: center;
+}
+
+/* Cart count badge on navbar */
+.cart-badge {
+  background: #e86c1a;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: top;
+  margin-top: -6px;
+  margin-left: -6px;
+}
+</style>
+
+
+<!-- ════════════════════════════════════
+     PART B: HTML template for each product card
+     Replace your existing product card HTML with this.
+     The JS will inject this via renderProducts().
+     ════════════════════════════════════ -->
+
+<!--
+  EXAMPLE product object structure expected:
+  {
+    id: "prod_001",
+    name: "Colgate Toothpaste 200g",
+    price: 89,
+    image: "assets/colgate.jpg",
+    category: "Personal Care"
+  }
+-->
+
+<!-- This is a TEMPLATE STRING — use it inside your JS renderProducts() function -->
+<!--
+function renderProductCard(product) {
+  return `
+    <div class="product-card" data-id="${product.id}">
+      <div class="product-img-wrap">
+        <img src="${product.image}" alt="${product.name}"
+             onerror="this.src='assets/placeholder.png'" />
+      </div>
+      <div class="product-info">
+        <div class="product-name">${product.name}</div>
+        <div class="product-price">₹${product.price}</div>
+      </div>
+      <div class="product-actions">
+        <button class="btn-add-cart" onclick="addToCart(${JSON.stringify(product).replace(/"/g,"'")})">
+          🛒 Add to Cart
+        </button>
+        <button class="btn-buy-now" onclick="buyNowProduct(${JSON.stringify(product).replace(/"/g,"'")})">
+          ⚡ Buy Now
+        </button>
+      </div>
+    </div>
+  `;
+}
+-->
+
+<!-- Toast element — add this just before </body> -->
+<div id="ags-toast"></div>
+
+
+<!-- ════════════════════════════════════
+     PART C: JavaScript — add to <script type="module">
+     ════════════════════════════════════ -->
+<script type="module">
+
+import { buyNow } from "./order.js";
+
+// ── CART FUNCTIONS ──────────────────────────────────────
+
+const CART_KEY = "ags_cart";
+
+function getCart() {
+  return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+}
+
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  updateCartBadge();
+}
+
+function updateCartBadge() {
+  const cart = getCart();
+  const total = cart.reduce((sum, i) => sum + i.qty, 0);
+  const badge = document.getElementById("cart-count");
+  if (badge) badge.textContent = total;
+}
+
+// ── ADD TO CART ──────────────────────────────────────────
+window.addToCart = function(product) {
+  const cart = getCart();
+  const existing = cart.find(i => i.id === product.id);
+
+  if (existing) {
+    existing.qty += 1;
+    showToast(`✅ ${product.name} — qty updated to ${existing.qty}`);
+  } else {
+    cart.push({ ...product, qty: 1 });
+    showToast(`🛒 "${product.name}" added to cart!`);
+  }
+
+  saveCart(cart);
+
+  // Update button appearance
+  const btn = document.querySelector(`.product-card[data-id="${product.id}"] .btn-add-cart`);
+  if (btn) {
+    btn.textContent = "✅ Added";
+    btn.classList.add("in-cart");
+    setTimeout(() => {
+      btn.innerHTML = "🛒 Add to Cart";
+      btn.classList.remove("in-cart");
+    }, 1500);
+  }
+};
+
+// ── BUY NOW ─────────────────────────────────────────────
+window.buyNowProduct = function(product) {
+  buyNow(product);  // from order.js — goes straight to checkout
+};
+
+// ── TOAST ────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById("ags-toast");
+  if (!t) return;
+  t.textContent = msg;
+  t.style.display = "block";
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => (t.style.display = "none"), 2500);
+}
+
+// ── INIT ─────────────────────────────────────────────────
+updateCartBadge();
+
+</script>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Orders — AGS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #1a7a4a; --green-light: #e8f5ee;
+      --saffron: #e86c1a; --saffron-light: #fff4ec;
+      --dark: #1a1a1a; --gray: #6b7280; --border: #e5e7eb;
+      --bg: #f9fafb; --white: #ffffff;
+      --radius: 12px; --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--dark); }
+
+    .topbar { background: var(--green); padding: 14px 20px; display: flex; align-items: center; gap: 16px; }
+    .topbar .logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; text-decoration: none; }
+    .topbar .title { color: white; font-weight: 600; font-size: 1rem; margin-left: auto; }
+
+    .page-wrap { max-width: 720px; margin: 28px auto; padding: 0 16px; }
+    h1 { font-family: 'Syne', sans-serif; font-size: 1.4rem; margin-bottom: 20px; }
+
+    .order-card {
+      background: var(--white); border-radius: var(--radius);
+      box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden;
+    }
+    .order-header {
+      background: var(--green-light); padding: 14px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 8px;
+    }
+    .order-id { font-size: 0.78rem; color: var(--gray); }
+    .order-id strong { color: var(--dark); font-weight: 700; }
+    .order-date { font-size: 0.78rem; color: var(--gray); }
+    .order-status { padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+    .status-Pending    { background: #fef3c7; color: #92400e; }
+    .status-Confirmed  { background: #dbeafe; color: #1e40af; }
+    .status-Shipped    { background: #ede9fe; color: #5b21b6; }
+    .status-Delivered  { background: #dcfce7; color: #166534; }
+    .status-Cancelled  { background: #fee2e2; color: #991b1b; }
+
+    /* Flipkart-style tracker */
+    .tracker { display: flex; align-items: center; padding: 16px 20px; gap: 0; overflow-x: auto; }
+    .tracker-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 60px; }
+    .tracker-step .dot {
+      width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 0.8rem; font-weight: 700; z-index: 1;
+    }
+    .tracker-step .dot.done { background: var(--green); color: white; }
+    .tracker-step .dot.active { background: var(--saffron); color: white; box-shadow: 0 0 0 4px var(--saffron-light); }
+    .tracker-step .dot.pending { background: var(--border); color: var(--gray); }
+    .tracker-step .label { font-size: 0.7rem; margin-top: 6px; text-align: center; color: var(--gray); font-weight: 500; }
+    .tracker-step .label.done { color: var(--green); font-weight: 700; }
+    .tracker-step .label.active { color: var(--saffron); font-weight: 700; }
+    .tracker-line { flex: 1; height: 3px; background: var(--border); margin-top: -14px; min-width: 20px; }
+    .tracker-line.done { background: var(--green); }
+
+    .order-items-section { padding: 0 20px 4px; }
+    .oi { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; }
+    .oi:last-child { border-bottom: none; }
+    .oi img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; background: var(--bg); }
+    .oi .name { font-weight: 600; font-size: 0.88rem; }
+    .oi .meta { color: var(--gray); font-size: 0.78rem; }
+    .oi .price { margin-left: auto; font-weight: 700; color: var(--green); white-space: nowrap; }
+
+    .order-footer { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: #fafafa; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
+    .order-footer .total { font-weight: 700; font-size: 0.95rem; }
+    .order-footer .addr-info { font-size: 0.78rem; color: var(--gray); }
+
+    .empty-state { text-align: center; padding: 60px 20px; }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; margin-bottom: 6px; }
+    .empty-state p { color: var(--gray); font-size: 0.9rem; }
+    .btn-shop { display: inline-block; margin-top: 20px; padding: 12px 28px; background: var(--green); color: white; border-radius: 8px; font-weight: 700; text-decoration: none; font-family: 'Syne', sans-serif; }
+
+    .loading { text-align: center; padding: 40px; color: var(--gray); }
+    .login-prompt { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 32px; text-align: center; }
+    .login-prompt h3 { font-family: 'Syne', sans-serif; margin-bottom: 8px; }
+    .login-prompt p { color: var(--gray); font-size: 0.9rem; margin-bottom: 16px; }
+    .btn-login { display: inline-block; padding: 11px 28px; background: var(--green); color: white; border-radius: 8px; font-weight: 700; text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="topbar">
+  <a class="logo" href="index.html">🛒 AGS</a>
+  <span class="title">📦 My Orders</span>
+</div>
+
+<div class="page-wrap">
+  <h1>My Orders</h1>
+  <div id="orders-container"><div class="loading">⏳ Loading your orders…</div></div>
+</div>
+
+<script type="module">
+  import { getMyOrders } from "./order.js";
+  import { auth } from "./firebase-config.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  const STATUSES = ["Pending", "Confirmed", "Shipped", "Delivered"];
+  const ICONS = ["🕐", "✅", "🚚", "🏠"];
+
+  function statusIndex(s) { return STATUSES.indexOf(s); }
+
+  function renderTracker(status) {
+    const current = statusIndex(status);
+    let html = '<div class="tracker">';
+    STATUSES.forEach((s, i) => {
+      const state = i < current ? "done" : i === current ? "active" : "pending";
+      html += `<div class="tracker-step">
+        <div class="dot ${state}">${ICONS[i]}</div>
+        <div class="label ${state}">${s}</div>
+      </div>`;
+      if (i < STATUSES.length - 1) {
+        html += `<div class="tracker-line ${i < current ? 'done' : ''}"></div>`;
+      }
+    });
+    html += "</div>";
+    return html;
+  }
+
+  function formatDate(ts) {
+    if (!ts) return "—";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+  }
+
+  function renderOrders(orders) {
+    const container = document.getElementById("orders-container");
+    if (orders.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">📦</div>
+          <h3>No orders yet!</h3>
+          <p>You haven't ordered anything from AGS yet.</p>
+          <a href="index.html" class="btn-shop">Start Shopping</a>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = orders.map(order => {
+      const statusClass = `status-${order.status}`;
+      const items = order.items || [];
+      return `
+        <div class="order-card">
+          <div class="order-header">
+            <div>
+              <div class="order-id">Order ID: <strong>${order.id.slice(0, 12).toUpperCase()}</strong></div>
+              <div class="order-date">Placed: ${formatDate(order.createdAt)}</div>
+            </div>
+            <span class="order-status ${statusClass}">${order.status}</span>
+          </div>
+          ${order.status !== "Cancelled" ? renderTracker(order.status) : ""}
+          <div class="order-items-section">
+            ${items.map(item => `
+              <div class="oi">
+                <img src="${item.image || 'assets/placeholder.png'}" alt="${item.name}" onerror="this.src='assets/placeholder.png'"/>
+                <div>
+                  <div class="name">${item.name}</div>
+                  <div class="meta">Qty: ${item.qty} × ₹${item.price}</div>
+                </div>
+                <div class="price">₹${item.price * item.qty}</div>
+              </div>`).join("")}
+          </div>
+          <div class="order-footer">
+            <div>
+              <div class="total">Total: ₹${order.totalAmount}</div>
+              <div class="addr-info">📍 ${order.address?.address || ""}, ${order.address?.city || ""}</div>
+            </div>
+            <div class="addr-info">💵 Cash on Delivery</div>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    const container = document.getElementById("orders-container");
+    if (!user) {
+      container.innerHTML = `
+        <div class="login-prompt">
+          <h3>Please Login to View Orders</h3>
+          <p>Sign in to your AGS account to see your order history.</p>
+          <a href="index.html" class="btn-login">Login / Sign Up</a>
+        </div>`;
+      return;
+    }
+
+    try {
+      const orders = await getMyOrders();
+      renderOrders(orders);
+    } catch (e) {
+      container.innerHTML = `<div class="loading">❌ Could not load orders. Please try again.</div>`;
+    }
+  });
+</script>
+</body>
+</html>

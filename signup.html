@@ -1,283 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign Up — Ankit General Store</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-<nav class="navbar">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <div class="logo-icon">🛒</div>
-      <span>AGS</span>
-    </a>
-    <ul class="nav-links">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="products.html">Products</a></li>
-      <li>
-        <a href="cart.html" class="nav-cart">
-          🛒 Cart
-          <span class="cart-badge" style="display:none">0</span>
-        </a>
-      </li>
-    </ul>
-    <button class="dark-toggle">🌙</button>
-  </div>
-</nav>
-
-<div class="auth-wrap">
-  <div class="auth-card fade-in">
-
-    <div class="auth-logo">
-      <div class="logo-icon-lg">🛒</div>
-      <h1>Create Account</h1>
-      <p>Join AGS and shop online!</p>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">🛒</div>
+        <span>AGS</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li>
+          <a href="cart.html" class="nav-cart">
+            🛒 Cart
+            <span class="cart-badge" style="display:none">0</span>
+          </a>
+        </li>
+      </ul>
+      <button class="dark-toggle">🌙</button>
     </div>
+  </nav>
 
-    <!-- Name -->
-    <div class="form-group">
-      <label for="name">Full Name</label>
-      <input
-        type="text"
-        id="name"
-        class="form-input"
-        placeholder="Anuj Sharma"
-        autocomplete="name"
-      >
-    </div>
+  <div class="auth-wrap">
+    <div class="auth-card fade-in">
 
-    <!-- Email -->
-    <div class="form-group">
-      <label for="email">Email Address</label>
-      <input
-        type="email"
-        id="email"
-        class="form-input"
-        placeholder="you@example.com"
-        autocomplete="email"
-      >
-    </div>
-
-    <!-- Password -->
-    <div class="form-group">
-      <label for="password">
-        Password
-        <span style="color:var(--text-3);font-size:.8rem;font-weight:400"> (min. 6 characters)</span>
-      </label>
-      <div style="position:relative">
-        <input
-          type="password"
-          id="password"
-          class="form-input"
-          placeholder="Choose a strong password"
-          style="padding-right:44px"
-        >
-        <button
-          id="toggle-pw"
-          type="button"
-          style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--text-2)"
-        >👁</button>
+      <div class="auth-logo">
+        <div class="logo-icon-lg">🛒</div>
+        <h1>Create Account</h1>
+        <p>Join AGS and shop online!</p>
       </div>
-      <!-- Strength bar -->
-      <div style="height:4px;border-radius:2px;background:var(--border);margin-top:8px">
-        <div id="pw-bar" style="height:100%;border-radius:2px;width:0;transition:all .3s"></div>
+
+      <!-- Name -->
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" class="form-input" placeholder="Anuj Sharma" autocomplete="name">
       </div>
-      <p id="pw-hint" style="font-size:.78rem;color:var(--text-3);margin-top:4px"></p>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">
+          Password
+          <span style="color:var(--text-3);font-size:.8rem;font-weight:400"> (min. 6 characters)</span>
+        </label>
+        <div style="position:relative">
+          <input type="password" id="password" class="form-input" placeholder="Choose a strong password"
+            style="padding-right:44px">
+          <button id="toggle-pw" type="button"
+            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--text-2)">👁</button>
+        </div>
+        <!-- Strength bar -->
+        <div style="height:4px;border-radius:2px;background:var(--border);margin-top:8px">
+          <div id="pw-bar" style="height:100%;border-radius:2px;width:0;transition:all .3s"></div>
+        </div>
+        <p id="pw-hint" style="font-size:.78rem;color:var(--text-3);margin-top:4px"></p>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label for="confirm-pw">Confirm Password</label>
+        <input type="password" id="confirm-pw" class="form-input" placeholder="Repeat your password">
+      </div>
+
+      <!-- Error / Success -->
+      <div id="error-box"
+        style="display:none;background:var(--red-lt);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:.88rem;margin-bottom:14px;">
+      </div>
+      <div id="success-box"
+        style="display:none;background:#dcfce7;color:#15803d;padding:10px 14px;border-radius:var(--radius-sm);font-size:.88rem;margin-bottom:14px;">
+      </div>
+
+      <!-- Submit -->
+      <button id="signup-btn" class="btn btn-green btn-block">
+        Create Account
+      </button>
+
+      <div class="auth-link" style="margin-top:16px">
+        Already have an account? <a href="login.html">Login →</a>
+      </div>
+
     </div>
-
-    <!-- Confirm Password -->
-    <div class="form-group">
-      <label for="confirm-pw">Confirm Password</label>
-      <input
-        type="password"
-        id="confirm-pw"
-        class="form-input"
-        placeholder="Repeat your password"
-      >
-    </div>
-
-    <!-- Error / Success -->
-    <div
-      id="error-box"
-      style="display:none;background:var(--red-lt);color:var(--red);padding:10px 14px;border-radius:var(--radius-sm);font-size:.88rem;margin-bottom:14px;"
-    ></div>
-    <div
-      id="success-box"
-      style="display:none;background:#dcfce7;color:#15803d;padding:10px 14px;border-radius:var(--radius-sm);font-size:.88rem;margin-bottom:14px;"
-    ></div>
-
-    <!-- Submit -->
-    <button id="signup-btn" class="btn btn-green btn-block">
-      Create Account
-    </button>
-
-    <div class="auth-link" style="margin-top:16px">
-      Already have an account? <a href="login.html">Login →</a>
-    </div>
-
   </div>
-</div>
 
-<script type="module">
+  <script type="module">
 
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    updateProfile,
-    onAuthStateChanged,
-    setPersistence,
-    browserLocalPersistence
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    setDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      updateProfile,
+      onAuthStateChanged,
+      setPersistence,
+      browserLocalPersistence
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ── Paste your Firebase config here ─────────────────────────
-  const firebaseConfig = {
-    apiKey: "AIzaSyB9Z7K293ydkuy2jZHpqzawDBI-FtZVB6o",
-    authDomain: "ankit-general-store-33443.firebaseapp.com",
-    projectId: "ankit-general-store-33443",
-    storageBucket: "ankit-general-store-33443.firebasestorage.app",
-    messagingSenderId: "46126405791",
-    appId: "1:46126405791:web:e2dca04c30a1ec303caaaa",
-    measurementId: "G-TD2KF7CHP1"
-  };
-  // ────────────────────────────────────────────────────────────
-
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
-  await setPersistence(auth, browserLocalPersistence);
-
-  // Dark mode
-  const saved = localStorage.getItem("ags_dark");
-  if (saved === "1") document.body.classList.add("dark");
-  document.querySelectorAll(".dark-toggle").forEach(btn => {
-    btn.textContent = document.body.classList.contains("dark") ? "☀" : "🌙";
-    btn.addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-      localStorage.setItem("ags_dark", document.body.classList.contains("dark") ? "1" : "0");
-      btn.textContent = document.body.classList.contains("dark") ? "☀" : "🌙";
-    });
-  });
-
-  // Cart badge
-  const cart  = JSON.parse(localStorage.getItem("ags_cart") || "[]");
-  const total = cart.reduce((s, i) => s + i.qty, 0);
-  document.querySelectorAll(".cart-badge").forEach(b => {
-    if (total > 0) { b.textContent = total; b.style.display = "flex"; }
-  });
-
-  // Already logged in → redirect
-  onAuthStateChanged(auth, (user) => {
-    if (user) window.location.href = "index.html";
-  });
-
-  // Show/hide password
-  document.getElementById("toggle-pw").addEventListener("click", () => {
-    const pw = document.getElementById("password");
-    pw.type = pw.type === "password" ? "text" : "password";
-  });
-
-  // Password strength meter
-  document.getElementById("password").addEventListener("input", (e) => {
-    const val  = e.target.value;
-    const bar  = document.getElementById("pw-bar");
-    const hint = document.getElementById("pw-hint");
-    let strength = 0;
-    if (val.length >= 6)  strength++;
-    if (val.length >= 10) strength++;
-    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) strength++;
-    if (/[^A-Za-z0-9]/.test(val)) strength++;
-    const colors = ["", "#ef4444", "#f59e0b", "#22c55e", "#15803d"];
-    const widths = ["0%", "25%", "50%", "75%", "100%"];
-    const labels = ["", "Weak", "Fair", "Good", "Strong"];
-    bar.style.width      = widths[strength];
-    bar.style.background = colors[strength];
-    hint.textContent     = val.length > 0 ? labels[strength] : "";
-    hint.style.color     = colors[strength];
-  });
-
-  // Helpers
-  function showError(msg) {
-    const box = document.getElementById("error-box");
-    box.textContent = msg;
-    box.style.display = "block";
-    document.getElementById("success-box").style.display = "none";
-  }
-  function showSuccess(msg) {
-    const box = document.getElementById("success-box");
-    box.textContent = msg;
-    box.style.display = "block";
-    document.getElementById("error-box").style.display = "none";
-  }
-  function friendlyError(code) {
-    const map = {
-      "auth/email-already-in-use":   "An account with this email already exists.",
-      "auth/invalid-email":          "Please enter a valid email address.",
-      "auth/weak-password":          "Password is too weak. Use at least 6 characters.",
-      "auth/network-request-failed": "Network error. Please check your internet connection.",
-      "auth/too-many-requests":      "Too many attempts. Please try again later.",
-      "auth/internal-error":         "Something went wrong. Please try again.",
+    // ── Paste your Firebase config here ─────────────────────────
+    const firebaseConfig = {
+      apiKey: "AIzaSyB9Z7K293ydkuy2jZHpqzawDBI-FtZVB6o",
+      authDomain: "ankit-general-store-33443.firebaseapp.com",
+      projectId: "ankit-general-store-33443",
+      storageBucket: "ankit-general-store-33443.firebasestorage.app",
+      messagingSenderId: "46126405791",
+      appId: "1:46126405791:web:e2dca04c30a1ec303caaaa",
+      measurementId: "G-TD2KF7CHP1"
     };
-    return map[code] || "Sign up failed: " + code;
-  }
+    // ────────────────────────────────────────────────────────────
 
-  // Sign up
-  document.getElementById("signup-btn").addEventListener("click", async () => {
-    const name  = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const pw    = document.getElementById("password").value;
-    const cpw   = document.getElementById("confirm-pw").value;
-    const btn   = document.getElementById("signup-btn");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    await setPersistence(auth, browserLocalPersistence);
 
-    document.getElementById("error-box").style.display   = "none";
-    document.getElementById("success-box").style.display = "none";
-
-    // Validation
-    if (!name)         { showError("Please enter your full name."); return; }
-    if (!email)        { showError("Please enter your email address."); return; }
-    if (!pw)           { showError("Please choose a password."); return; }
-    if (pw.length < 6) { showError("Password must be at least 6 characters."); return; }
-    if (pw !== cpw)    { showError("Passwords do not match. Please check and try again."); return; }
-
-    btn.textContent = "Creating account…";
-    btn.disabled    = true;
-
-    try {
-      // Create Firebase Auth user
-      const cred = await createUserWithEmailAndPassword(auth, email, pw);
-
-      // Set display name
-      await updateProfile(cred.user, { displayName: name });
-
-      // Save user data to Firestore
-      await setDoc(doc(db, "users", cred.user.uid), {
-        uid:       cred.user.uid,
-        name:      name,
-        email:     email,
-        role:      "customer",
-        createdAt: serverTimestamp()
+    // Dark mode
+    const saved = localStorage.getItem("ags_dark");
+    if (saved === "1") document.body.classList.add("dark");
+    document.querySelectorAll(".dark-toggle").forEach(btn => {
+      btn.textContent = document.body.classList.contains("dark") ? "☀" : "🌙";
+      btn.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+        localStorage.setItem("ags_dark", document.body.classList.contains("dark") ? "1" : "0");
+        btn.textContent = document.body.classList.contains("dark") ? "☀" : "🌙";
       });
+    });
 
-      showSuccess("✓ Account created successfully! Redirecting…");
-      setTimeout(() => { window.location.href = "index.html"; }, 1000);
+    // Cart badge
+    const cart = JSON.parse(localStorage.getItem("ags_cart") || "[]");
+    const total = cart.reduce((s, i) => s + i.qty, 0);
+    document.querySelectorAll(".cart-badge").forEach(b => {
+      if (total > 0) { b.textContent = total; b.style.display = "flex"; }
+    });
 
-    } catch (err) {
-      showError(friendlyError(err.code));
-      btn.textContent = "Create Account";
-      btn.disabled    = false;
+    // Already logged in → redirect
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = "index.html";
+    });
+
+    // Show/hide password
+    document.getElementById("toggle-pw").addEventListener("click", () => {
+      const pw = document.getElementById("password");
+      pw.type = pw.type === "password" ? "text" : "password";
+    });
+
+    // Password strength meter
+    document.getElementById("password").addEventListener("input", (e) => {
+      const val = e.target.value;
+      const bar = document.getElementById("pw-bar");
+      const hint = document.getElementById("pw-hint");
+      let strength = 0;
+      if (val.length >= 6) strength++;
+      if (val.length >= 10) strength++;
+      if (/[A-Z]/.test(val) && /[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+      const colors = ["", "#ef4444", "#f59e0b", "#22c55e", "#15803d"];
+      const widths = ["0%", "25%", "50%", "75%", "100%"];
+      const labels = ["", "Weak", "Fair", "Good", "Strong"];
+      bar.style.width = widths[strength];
+      bar.style.background = colors[strength];
+      hint.textContent = val.length > 0 ? labels[strength] : "";
+      hint.style.color = colors[strength];
+    });
+
+    // Helpers
+    function showError(msg) {
+      const box = document.getElementById("error-box");
+      box.textContent = msg;
+      box.style.display = "block";
+      document.getElementById("success-box").style.display = "none";
     }
-  });
+    function showSuccess(msg) {
+      const box = document.getElementById("success-box");
+      box.textContent = msg;
+      box.style.display = "block";
+      document.getElementById("error-box").style.display = "none";
+    }
+    function friendlyError(code) {
+      const map = {
+        "auth/email-already-in-use": "An account with this email already exists.",
+        "auth/invalid-email": "Please enter a valid email address.",
+        "auth/weak-password": "Password is too weak. Use at least 6 characters.",
+        "auth/network-request-failed": "Network error. Please check your internet connection.",
+        "auth/too-many-requests": "Too many attempts. Please try again later.",
+        "auth/internal-error": "Something went wrong. Please try again.",
+      };
+      return map[code] || "Sign up failed: " + code;
+    }
 
-</script>
+    // Sign up
+    document.getElementById("signup-btn").addEventListener("click", async () => {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const pw = document.getElementById("password").value;
+      const cpw = document.getElementById("confirm-pw").value;
+      const btn = document.getElementById("signup-btn");
+
+      document.getElementById("error-box").style.display = "none";
+      document.getElementById("success-box").style.display = "none";
+
+      // Validation
+      if (!name) { showError("Please enter your full name."); return; }
+      if (!email) { showError("Please enter your email address."); return; }
+      if (!pw) { showError("Please choose a password."); return; }
+      if (pw.length < 6) { showError("Password must be at least 6 characters."); return; }
+      if (pw !== cpw) { showError("Passwords do not match. Please check and try again."); return; }
+
+      btn.textContent = "Creating account…";
+      btn.disabled = true;
+
+      try {
+        // Create Firebase Auth user
+        const cred = await createUserWithEmailAndPassword(auth, email, pw);
+
+        // Set display name
+        await updateProfile(cred.user, { displayName: name });
+
+        // Save user data to Firestore
+        await setDoc(doc(db, "users", cred.user.uid), {
+          uid: cred.user.uid,
+          name: name,
+          email: email,
+          role: "customer",
+          createdAt: serverTimestamp()
+        });
+
+        showSuccess("✓ Account created successfully! Redirecting…");
+        setTimeout(() => { window.location.href = "index.html"; }, 1000);
+
+      } catch (err) {
+        showError(friendlyError(err.code));
+        btn.textContent = "Create Account";
+        btn.disabled = false;
+      }
+    });
+
+  </script>
 </body>
+
 </html>
