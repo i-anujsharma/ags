@@ -3,197 +3,693 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Orders — AGS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <title>My Orders – AGS Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
   <style>
+    /* ── Variables ── */
     :root {
-      --green: #1a7a4a; --green-light: #e8f5ee;
-      --saffron: #e86c1a; --saffron-light: #fff4ec;
-      --dark: #1a1a1a; --gray: #6b7280; --border: #e5e7eb;
-      --bg: #f9fafb; --white: #ffffff;
-      --radius: 12px; --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --green:         #2d7a3a;
+      --green-light:   #3a9e4a;
+      --green-pale:    #e8f5eb;
+      --saffron:       #e07b1a;
+      --saffron-light: #f5a144;
+      --saffron-pale:  #fff3e0;
+      --bg:            #f5f7f5;
+      --surface:       #ffffff;
+      --border:        #d6e8d8;
+      --text:          #1a2e1d;
+      --text-muted:    #5a7060;
+      --danger:        #c0392b;
+      --shadow:        0 2px 12px rgba(45,122,58,0.10);
+      --radius:        12px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--dark); }
+    [data-theme="dark"] {
+      --bg:          #121a13;
+      --surface:     #1e2b20;
+      --border:      #2d4030;
+      --text:        #e2efe4;
+      --text-muted:  #8aaa8f;
+      --green:       #4caf60;
+      --green-pale:  #1a2e1d;
+      --saffron:     #f5a144;
+      --saffron-pale:#2e1f0a;
+      --shadow:      0 2px 12px rgba(0,0,0,0.35);
+    }
 
-    .topbar { background: var(--green); padding: 14px 20px; display: flex; align-items: center; gap: 16px; }
-    .topbar .logo { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: white; text-decoration: none; }
-    .topbar .title { color: white; font-weight: 600; font-size: 1rem; margin-left: auto; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .page-wrap { max-width: 720px; margin: 28px auto; padding: 0 16px; }
-    h1 { font-family: 'Syne', sans-serif; font-size: 1.4rem; margin-bottom: 20px; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
+    /* ── Topbar ── */
+    .topbar {
+      background: var(--green);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .topbar-brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .topbar-brand span { color: #f5a144; }
+    .topbar-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+    }
+    .btn-back {
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.25); }
+
+    /* ── Page Wrap ── */
+    .page-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+    .page-wrap h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    /* ── Loading ── */
+    .loading {
+      text-align: center;
+      padding: 60px 40px;
+    }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 4px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading p { font-size: 0.9rem; color: var(--text-muted); }
+
+    /* ── Auth Gate ── */
+    #auth-gate {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding: 70px 24px;
+      text-align: center;
+      gap: 10px;
+    }
+    #auth-gate .gate-icon { font-size: 3rem; }
+    #auth-gate h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      color: var(--text);
+    }
+    #auth-gate p { color: var(--text-muted); font-size: 0.9rem; }
+    .btn-login {
+      display: inline-block;
+      margin-top: 8px;
+      background: var(--green);
+      color: #fff;
+      padding: 11px 26px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+    .btn-login:hover { background: var(--green-light); }
+
+    /* ── Stats Strip ── */
+    .stats-strip {
+      display: none;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      flex: 1;
+      min-width: 80px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--green);
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── Filter Tabs ── */
+    .filter-tabs {
+      display: none;
+      gap: 8px;
+      margin-bottom: 16px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .tab-btn.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+
+    /* ── Orders Container ── */
+    #orders-container { display: flex; flex-direction: column; gap: 12px; }
+
+    /* ── Order Card ── */
     .order-card {
-      background: var(--white); border-radius: var(--radius);
-      box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
-    .order-header {
-      background: var(--green-light); padding: 14px 20px;
-      display: flex; justify-content: space-between; align-items: center;
-      flex-wrap: wrap; gap: 8px;
+    .order-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
     }
-    .order-id { font-size: 0.78rem; color: var(--gray); }
-    .order-id strong { color: var(--dark); font-weight: 700; }
-    .order-date { font-size: 0.78rem; color: var(--gray); }
-    .order-status { padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
-    .status-Pending    { background: #fef3c7; color: #92400e; }
-    .status-Confirmed  { background: #dbeafe; color: #1e40af; }
-    .status-Shipped    { background: #ede9fe; color: #5b21b6; }
-    .status-Delivered  { background: #dcfce7; color: #166534; }
-    .status-Cancelled  { background: #fee2e2; color: #991b1b; }
-
-    /* Flipkart-style tracker */
-    .tracker { display: flex; align-items: center; padding: 16px 20px; gap: 0; overflow-x: auto; }
-    .tracker-step { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 60px; }
-    .tracker-step .dot {
-      width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; font-size: 0.8rem; font-weight: 700; z-index: 1;
+    .order-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text);
     }
-    .tracker-step .dot.done { background: var(--green); color: white; }
-    .tracker-step .dot.active { background: var(--saffron); color: white; box-shadow: 0 0 0 4px var(--saffron-light); }
-    .tracker-step .dot.pending { background: var(--border); color: var(--gray); }
-    .tracker-step .label { font-size: 0.7rem; margin-top: 6px; text-align: center; color: var(--gray); font-weight: 500; }
-    .tracker-step .label.done { color: var(--green); font-weight: 700; }
-    .tracker-step .label.active { color: var(--saffron); font-weight: 700; }
-    .tracker-line { flex: 1; height: 3px; background: var(--border); margin-top: -14px; min-width: 20px; }
-    .tracker-line.done { background: var(--green); }
+    .order-date { font-size: 0.78rem; color: var(--text-muted); margin-top: 3px; }
 
-    .order-items-section { padding: 0 20px 4px; }
-    .oi { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: center; }
-    .oi:last-child { border-bottom: none; }
-    .oi img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; background: var(--bg); }
-    .oi .name { font-weight: 600; font-size: 0.88rem; }
-    .oi .meta { color: var(--gray); font-size: 0.78rem; }
-    .oi .price { margin-left: auto; font-weight: 700; color: var(--green); white-space: nowrap; }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .status-pending    { background: #fff3cd; color: #856404; }
+    .status-confirmed  { background: #d1e7dd; color: #0f5132; }
+    .status-processing { background: #cfe2ff; color: #084298; }
+    .status-shipped    { background: #e2d9f3; color: #432874; }
+    .status-delivered  { background: #d1e7dd; color: #0a3622; border: 1.5px solid #0f5132; }
+    .status-cancelled  { background: #f8d7da; color: #721c24; }
 
-    .order-footer { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: #fafafa; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 8px; }
-    .order-footer .total { font-weight: 700; font-size: 0.95rem; }
-    .order-footer .addr-info { font-size: 0.78rem; color: var(--gray); }
+    /* Items list inside card */
+    .order-items-list {
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .order-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      font-size: 0.87rem;
+      border-bottom: 1px dashed var(--border);
+      gap: 8px;
+    }
+    .order-item-row:last-child { border-bottom: none; }
+    .item-name { color: var(--text); flex: 1; }
+    .item-qty {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      background: var(--bg);
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+    .item-price { color: var(--green); font-weight: 600; min-width: 56px; text-align: right; }
 
-    .empty-state { text-align: center; padding: 60px 20px; }
-    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
-    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; margin-bottom: 6px; }
-    .empty-state p { color: var(--gray); font-size: 0.9rem; }
-    .btn-shop { display: inline-block; margin-top: 20px; padding: 12px 28px; background: var(--green); color: white; border-radius: 8px; font-weight: 700; text-decoration: none; font-family: 'Syne', sans-serif; }
+    /* Delivery address row */
+    .order-address {
+      padding: 7px 16px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 5px;
+      align-items: flex-start;
+    }
 
-    .loading { text-align: center; padding: 40px; color: var(--gray); }
-    .login-prompt { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 32px; text-align: center; }
-    .login-prompt h3 { font-family: 'Syne', sans-serif; margin-bottom: 8px; }
-    .login-prompt p { color: var(--gray); font-size: 0.9rem; margin-bottom: 16px; }
-    .btn-login { display: inline-block; padding: 11px 28px; background: var(--green); color: white; border-radius: 8px; font-weight: 700; text-decoration: none; }
+    /* Card footer */
+    .order-card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .order-total-label { font-size: 0.76rem; color: var(--text-muted); }
+    .order-total-amt {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--green);
+    }
+    .order-actions { display: flex; gap: 8px; align-items: center; }
+
+    .btn-wa {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #25d366;
+      color: #fff;
+      border: none;
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-wa:hover { background: #1ebe5d; }
+
+    .btn-reorder {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--saffron-pale);
+      color: var(--saffron);
+      border: 1.5px solid var(--saffron);
+      padding: 7px 13px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-reorder:hover { background: #fde8c8; }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-muted);
+    }
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .empty-state p { font-size: 0.9rem; margin-bottom: 20px; }
+    .btn-shop {
+      display: inline-block;
+      background: var(--saffron);
+      color: #fff;
+      padding: 11px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.92rem;
+      transition: background 0.2s;
+    }
+    .btn-shop:hover { background: var(--saffron-light); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--green);
+      color: #fff;
+      padding: 11px 22px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    @media (max-width: 480px) {
+      .order-card-head { flex-wrap: wrap; }
+    }
   </style>
 </head>
 <body>
-<div class="topbar">
-  <a class="logo" href="index.html">🛒 AGS</a>
-  <span class="title">📦 My Orders</span>
-</div>
 
-<div class="page-wrap">
-  <h1>My Orders</h1>
-  <div id="orders-container"><div class="loading">⏳ Loading your orders…</div></div>
-</div>
+  <!-- ══ Topbar ══ -->
+  <div class="topbar">
+    <a href="index.html" class="topbar-brand">🛒 <span>AGS</span></a>
+    <div class="topbar-title">📦 My Orders</div>
+    <a href="profile.html" class="btn-back">← Profile</a>
+  </div>
 
-<script type="module">
-  import { getMyOrders } from "./order.js";
-  import { auth } from "./firebase-config.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  <!-- ══ Page Wrap ══ -->
+  <div class="page-wrap">
+    <h1>My Orders</h1>
+    <p class="page-subtitle">Aapke saare orders yahan dikhenge</p>
 
-  const STATUSES = ["Pending", "Confirmed", "Shipped", "Delivered"];
-  const ICONS = ["🕐", "✅", "🚚", "🏠"];
+    <!-- Stats -->
+    <div class="stats-strip" id="stats-strip">
+      <div class="stat-pill">
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-label">Total</div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-num" id="stat-pending" style="color:var(--saffron)">0</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-num" id="stat-delivered" style="color:#0f5132">0</div>
+        <div class="stat-label">Delivered</div>
+      </div>
+    </div>
 
-  function statusIndex(s) { return STATUSES.indexOf(s); }
+    <!-- Filter Tabs -->
+    <div class="filter-tabs" id="filter-tabs">
+      <button class="tab-btn active" data-filter="all">All</button>
+      <button class="tab-btn" data-filter="pending">⏳ Pending</button>
+      <button class="tab-btn" data-filter="confirmed">✅ Confirmed</button>
+      <button class="tab-btn" data-filter="processing">🔄 Processing</button>
+      <button class="tab-btn" data-filter="shipped">🚚 Shipped</button>
+      <button class="tab-btn" data-filter="delivered">📬 Delivered</button>
+      <button class="tab-btn" data-filter="cancelled">❌ Cancelled</button>
+    </div>
 
-  function renderTracker(status) {
-    const current = statusIndex(status);
-    let html = '<div class="tracker">';
-    STATUSES.forEach((s, i) => {
-      const state = i < current ? "done" : i === current ? "active" : "pending";
-      html += `<div class="tracker-step">
-        <div class="dot ${state}">${ICONS[i]}</div>
-        <div class="label ${state}">${s}</div>
-      </div>`;
-      if (i < STATUSES.length - 1) {
-        html += `<div class="tracker-line ${i < current ? 'done' : ''}"></div>`;
+    <!-- Orders -->
+    <div id="orders-container">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>⏳ Loading your orders…</p>
+      </div>
+    </div>
+
+    <!-- Auth Gate -->
+    <div id="auth-gate">
+      <div class="gate-icon">🔐</div>
+      <h2>Login karo pehle</h2>
+      <p>Orders dekhne ke liye login zaroori hai</p>
+      <a href="login.html" class="btn-login">Login / Sign Up</a>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <!-- ══ Firebase ══ -->
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, collection, query, where, orderBy, getDocs }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    /* ── Config ── */
+    const firebaseConfig = {
+      apiKey:            "AIzaSyB9Z7K293ydkuy2jZHpqzawDBI-FtZVB6o",
+      authDomain:        "ankit-general-store-33443.firebaseapp.com",
+      projectId:         "ankit-general-store-33443",
+      storageBucket:     "ankit-general-store-33443.firebasestorage.app",
+      messagingSenderId: "46126405791",
+      appId:             "1:46126405791:web:e2dca04c30a1ec303caaaa",
+      measurementId:     "G-TD2KF7CHP1"
+    };
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    const $ = id => document.getElementById(id);
+
+    function showToast(msg) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'show';
+      setTimeout(() => t.className = '', 2800);
+    }
+
+    function fmtDate(ts) {
+      if (!ts) return '—';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function fmtTime(ts) {
+      if (!ts) return '';
+      const d = ts.toDate ? ts.toDate() : new Date(ts);
+      return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    const STATUS_LABEL = {
+      pending:    '⏳ Pending',
+      confirmed:  '✅ Confirmed',
+      processing: '🔄 Processing',
+      shipped:    '🚚 Shipped',
+      delivered:  '📬 Delivered',
+      cancelled:  '❌ Cancelled'
+    };
+
+    /* ── Auth ── */
+    onAuthStateChanged(auth, async user => {
+      if (!user) {
+        $('orders-container').style.display = 'none';
+        $('auth-gate').style.display = 'flex';
+        return;
       }
+      await loadOrders(user.uid);
     });
-    html += "</div>";
-    return html;
-  }
 
-  function formatDate(ts) {
-    if (!ts) return "—";
-    const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
-  }
+    let allOrders = [];
 
-  function renderOrders(orders) {
-    const container = document.getElementById("orders-container");
-    if (orders.length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="icon">📦</div>
-          <h3>No orders yet!</h3>
-          <p>You haven't ordered anything from AGS yet.</p>
-          <a href="index.html" class="btn-shop">Start Shopping</a>
-        </div>`;
-      return;
+    /* ── Load Orders from Firestore ── */
+    async function loadOrders(uid) {
+      const container = $('orders-container');
+      try {
+        /* Try with orderBy first (needs composite index) */
+        const q = query(
+          collection(db, 'orders'),
+          where('uid', '==', uid),
+          orderBy('createdAt', 'desc')
+        );
+        const snap = await getDocs(q);
+        allOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (e) {
+        /* Fallback: without orderBy, sort client-side */
+        try {
+          const q2 = query(collection(db, 'orders'), where('uid', '==', uid));
+          const snap2 = await getDocs(q2);
+          allOrders = snap2.docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => {
+              const ta = a.createdAt?.toDate?.() || new Date(a.createdAt || 0);
+              const tb = b.createdAt?.toDate?.() || new Date(b.createdAt || 0);
+              return tb - ta;
+            });
+        } catch (e2) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">⚠️</div>
+              <h3>Orders load nahi hue</h3>
+              <p style="font-size:0.8rem;font-family:monospace">${e2.message}</p>
+            </div>`;
+          return;
+        }
+      }
+
+      if (allOrders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <h3>Koi order nahi mila</h3>
+            <p>Abhi tak koi order place nahi kiya aapne.</p>
+            <a href="products.html" class="btn-shop">Shop karo →</a>
+          </div>`;
+        return;
+      }
+
+      /* Show stats + filters */
+      const pending   = allOrders.filter(o => o.status === 'pending').length;
+      const delivered = allOrders.filter(o => o.status === 'delivered').length;
+      $('stat-total').textContent     = allOrders.length;
+      $('stat-pending').textContent   = pending;
+      $('stat-delivered').textContent = delivered;
+      $('stats-strip').style.display  = 'flex';
+      $('filter-tabs').style.display  = 'flex';
+
+      renderOrders('all');
+
+      /* Tab filter logic */
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderOrders(btn.dataset.filter);
+        });
+      });
     }
 
-    container.innerHTML = orders.map(order => {
-      const statusClass = `status-${order.status}`;
-      const items = order.items || [];
+    /* ── Render filtered list ── */
+    function renderOrders(filter) {
+      const container = $('orders-container');
+      const list = filter === 'all'
+        ? allOrders
+        : allOrders.filter(o => (o.status || 'pending') === filter);
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>Koi order nahi</h3>
+            <p>Is category mein abhi koi order nahi hai.</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(buildCard).join('');
+
+      /* WhatsApp button listener */
+      container.querySelectorAll('.btn-wa').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const msg = encodeURIComponent(
+            `🛒 *AGS Order Enquiry*\n\nOrder ID: ${btn.dataset.id}\nStatus: ${STATUS_LABEL[btn.dataset.status] || btn.dataset.status}\n\nKripya mera order status batayein.`
+          );
+          window.open(`https://wa.me/917617263817?text=${msg}`, '_blank');
+        });
+      });
+    }
+
+    /* ── Build one order card ── */
+    function buildCard(o) {
+      const status      = o.status || 'pending';
+      const statusLabel = STATUS_LABEL[status] || status;
+      const shortId     = o.id.slice(0, 8).toUpperCase();
+      const dateStr     = fmtDate(o.createdAt);
+      const timeStr     = fmtTime(o.createdAt);
+
+      /* Items rows */
+      let itemsHtml = '';
+      if (Array.isArray(o.items) && o.items.length > 0) {
+        itemsHtml = o.items.map(item => {
+          const qty   = item.qty || item.quantity || 1;
+          const price = (item.price || 0) * qty;
+          return `<div class="order-item-row">
+            <span class="item-name">${item.name || 'Item'}</span>
+            <span class="item-qty">×${qty}</span>
+            <span class="item-price">₹${price}</span>
+          </div>`;
+        }).join('');
+      } else if (o.itemsSummary) {
+        itemsHtml = `<div class="order-item-row">
+          <span class="item-name">${o.itemsSummary}</span>
+          <span class="item-qty">${o.itemCount || ''} items</span>
+          <span class="item-price">₹${o.total || 0}</span>
+        </div>`;
+      } else {
+        itemsHtml = `<div style="font-size:0.84rem;color:var(--text-muted);padding:6px 0">
+          Item detail available nahi hai
+        </div>`;
+      }
+
+      /* Delivery address */
+      const addr = o.address || o.deliveryAddress || '';
+      const addrHtml = addr
+        ? `<div class="order-address">📍 <span>${addr}</span></div>`
+        : '';
+
+      /* WhatsApp button — hide after delivered/cancelled */
+      const showWa = !['delivered', 'cancelled'].includes(status);
+
       return `
-        <div class="order-card">
-          <div class="order-header">
-            <div>
-              <div class="order-id">Order ID: <strong>${order.id.slice(0, 12).toUpperCase()}</strong></div>
-              <div class="order-date">Placed: ${formatDate(order.createdAt)}</div>
-            </div>
-            <span class="order-status ${statusClass}">${order.status}</span>
-          </div>
-          ${order.status !== "Cancelled" ? renderTracker(order.status) : ""}
-          <div class="order-items-section">
-            ${items.map(item => `
-              <div class="oi">
-                <img src="${item.image || 'assets/placeholder.png'}" alt="${item.name}" onerror="this.src='assets/placeholder.png'"/>
-                <div>
-                  <div class="name">${item.name}</div>
-                  <div class="meta">Qty: ${item.qty} × ₹${item.price}</div>
-                </div>
-                <div class="price">₹${item.price * item.qty}</div>
-              </div>`).join("")}
-          </div>
-          <div class="order-footer">
-            <div>
-              <div class="total">Total: ₹${order.totalAmount}</div>
-              <div class="addr-info">📍 ${order.address?.address || ""}, ${order.address?.city || ""}</div>
-            </div>
-            <div class="addr-info">💵 Cash on Delivery</div>
-          </div>
-        </div>`;
-    }).join("");
-  }
+        <div class="order-card" data-status="${status}">
 
-  onAuthStateChanged(auth, async (user) => {
-    const container = document.getElementById("orders-container");
-    if (!user) {
-      container.innerHTML = `
-        <div class="login-prompt">
-          <h3>Please Login to View Orders</h3>
-          <p>Sign in to your AGS account to see your order history.</p>
-          <a href="index.html" class="btn-login">Login / Sign Up</a>
-        </div>`;
-      return;
-    }
+          <div class="order-card-head">
+            <div>
+              <div class="order-num">Order #${shortId}</div>
+              <div class="order-date">${dateStr}${timeStr ? ' &nbsp;·&nbsp; ' + timeStr : ''}</div>
+            </div>
+            <span class="status-badge status-${status}">${statusLabel}</span>
+          </div>
 
-    try {
-      const orders = await getMyOrders();
-      renderOrders(orders);
-    } catch (e) {
-      container.innerHTML = `<div class="loading">❌ Could not load orders. Please try again.</div>`;
+          ${addrHtml}
+
+          <div class="order-items-list">
+            ${itemsHtml}
+          </div>
+
+          <div class="order-card-foot">
+            <div>
+              <div class="order-total-label">Order Total</div>
+              <div class="order-total-amt">₹${o.total || 0}</div>
+            </div>
+            <div class="order-actions">
+              ${showWa
+                ? `<button class="btn-wa" data-id="${o.id}" data-status="${status}">💬 WhatsApp</button>`
+                : ''}
+              <a href="products.html" class="btn-reorder">🔄 Reorder</a>
+            </div>
+          </div>
+
+        </div>`;
     }
-  });
-</script>
+  </script>
 </body>
 </html>
