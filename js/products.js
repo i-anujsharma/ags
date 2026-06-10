@@ -78,10 +78,12 @@ export function productCardHTML(p, showAdmin = false) {
       <button class="btn-del" data-id="${p.id}">🗑 Delete</button>
     </div>` : "";
 
-  const addBtn = !showAdmin ? `
-    <button class="btn-cart" data-id="${p.id}" ${p.stock === 0 ? "disabled" : ""}>
-      ${p.stock === 0 ? "Out of Stock" : "Add to Cart"}
-    </button>` : "";
+  const addBtn = !showAdmin ? (p.stock === 0 ? `
+    <button class="btn-cart" disabled>Out of Stock</button>` : `
+    <div class="product-actions">
+      <button class="btn-cart" data-id="${p.id}">🛒 Add to Cart</button>
+      <button class="btn-buy-now" data-id="${p.id}">⚡ Buy Now</button>
+    </div>`) : "";
 
   return `
     <div class="product-card" data-id="${p.id}">
@@ -111,26 +113,37 @@ export function attachCartListeners(products) {
       if (p) addToCart(p);
     });
   });
+
+  document.querySelectorAll(".btn-buy-now").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.preventDefault();
+      const id = btn.dataset.id;
+      const p = products.find(x => x.id === id);
+      if (!p) return;
+      sessionStorage.setItem("buyNowItem", JSON.stringify(p));
+      window.location.href = "checkout.html?mode=buynow";
+    });
+  });
 }
 
 // ── Seed sample products (run once from admin) ────────────────
 export const SAMPLE_PRODUCTS = [
-  { name:"Basmati Rice (5 kg)", category:"Grocery", price:350, stock:50, description:"Premium quality long-grain basmati rice.", featured:true, imageURL:"" },
-  { name:"Tata Salt (1 kg)", category:"Grocery", price:22, stock:100, description:"Iodized table salt.", featured:false, imageURL:"" },
-  { name:"Fortune Sunflower Oil (1 L)", category:"Grocery", price:140, stock:40, description:"Refined sunflower cooking oil.", featured:false, imageURL:"" },
-  { name:"Parle-G Biscuits (800 g)", category:"Snacks", price:45, stock:80, description:"Classic glucose biscuits.", featured:true, imageURL:"" },
-  { name:"Lay's Chips Classic (90 g)", category:"Snacks", price:30, stock:60, description:"Salted potato chips.", featured:false, imageURL:"" },
-  { name:"Haldiram Bhujia (400 g)", category:"Snacks", price:110, stock:35, description:"Crispy spicy sev bhujia.", featured:false, imageURL:"" },
-  { name:"Coca-Cola (2 L)", category:"Beverages", price:95, stock:45, description:"Chilled cola drink.", featured:false, imageURL:"" },
-  { name:"Bisleri Water (1 L)", category:"Beverages", price:20, stock:120, description:"Purified mineral water.", featured:false, imageURL:"" },
-  { name:"Frooti Mango Drink (200 ml)", category:"Beverages", price:15, stock:90, description:"Fresh mango drink.", featured:true, imageURL:"" },
-  { name:"Colgate Toothpaste (200 g)", category:"Personal Care", price:89, stock:55, description:"Strong teeth formula toothpaste.", featured:false, imageURL:"" },
-  { name:"Dove Soap (100 g)", category:"Personal Care", price:55, stock:70, description:"Moisturising beauty bar.", featured:false, imageURL:"" },
-  { name:"Head & Shoulders Shampoo (180 ml)", category:"Personal Care", price:175, stock:30, description:"Anti-dandruff shampoo.", featured:true, imageURL:"" },
-  { name:"Harpic Toilet Cleaner (500 ml)", category:"Household Items", price:115, stock:40, description:"Powerful toilet cleaning liquid.", featured:false, imageURL:"" },
-  { name:"Vim Dishwash Gel (500 ml)", category:"Household Items", price:80, stock:50, description:"Lemon dishwash gel.", featured:false, imageURL:"" },
-  { name:"Odomos Mosquito Repellent", category:"Household Items", price:65, stock:25, description:"Effective mosquito repellent cream.", featured:false, imageURL:"" },
-  { name:"Classmate Notebook (200 pages)", category:"Stationery", price:60, stock:75, description:"Single-line ruled notebook.", featured:false, imageURL:"" },
-  { name:"Reynolds Pen (Pack of 5)", category:"Stationery", price:35, stock:100, description:"Blue ballpoint pens.", featured:false, imageURL:"" },
-  { name:"Fevicol (75 g)", category:"Stationery", price:30, stock:60, description:"Strong adhesive glue.", featured:false, imageURL:"" },
+  { name: "Basmati Rice (5 kg)", category: "Grocery", price: 350, stock: 50, description: "Premium quality long-grain basmati rice.", featured: true, imageURL: "" },
+  { name: "Tata Salt (1 kg)", category: "Grocery", price: 22, stock: 100, description: "Iodized table salt.", featured: false, imageURL: "" },
+  { name: "Fortune Sunflower Oil (1 L)", category: "Grocery", price: 140, stock: 40, description: "Refined sunflower cooking oil.", featured: false, imageURL: "" },
+  { name: "Parle-G Biscuits (800 g)", category: "Snacks", price: 45, stock: 80, description: "Classic glucose biscuits.", featured: true, imageURL: "" },
+  { name: "Lay's Chips Classic (90 g)", category: "Snacks", price: 30, stock: 60, description: "Salted potato chips.", featured: false, imageURL: "" },
+  { name: "Haldiram Bhujia (400 g)", category: "Snacks", price: 110, stock: 35, description: "Crispy spicy sev bhujia.", featured: false, imageURL: "" },
+  { name: "Coca-Cola (2 L)", category: "Beverages", price: 95, stock: 45, description: "Chilled cola drink.", featured: false, imageURL: "" },
+  { name: "Bisleri Water (1 L)", category: "Beverages", price: 20, stock: 120, description: "Purified mineral water.", featured: false, imageURL: "" },
+  { name: "Frooti Mango Drink (200 ml)", category: "Beverages", price: 15, stock: 90, description: "Fresh mango drink.", featured: true, imageURL: "" },
+  { name: "Colgate Toothpaste (200 g)", category: "Personal Care", price: 89, stock: 55, description: "Strong teeth formula toothpaste.", featured: false, imageURL: "" },
+  { name: "Dove Soap (100 g)", category: "Personal Care", price: 55, stock: 70, description: "Moisturising beauty bar.", featured: false, imageURL: "" },
+  { name: "Head & Shoulders Shampoo (180 ml)", category: "Personal Care", price: 175, stock: 30, description: "Anti-dandruff shampoo.", featured: true, imageURL: "" },
+  { name: "Harpic Toilet Cleaner (500 ml)", category: "Household Items", price: 115, stock: 40, description: "Powerful toilet cleaning liquid.", featured: false, imageURL: "" },
+  { name: "Vim Dishwash Gel (500 ml)", category: "Household Items", price: 80, stock: 50, description: "Lemon dishwash gel.", featured: false, imageURL: "" },
+  { name: "Odomos Mosquito Repellent", category: "Household Items", price: 65, stock: 25, description: "Effective mosquito repellent cream.", featured: false, imageURL: "" },
+  { name: "Classmate Notebook (200 pages)", category: "Stationery", price: 60, stock: 75, description: "Single-line ruled notebook.", featured: false, imageURL: "" },
+  { name: "Reynolds Pen (Pack of 5)", category: "Stationery", price: 35, stock: 100, description: "Blue ballpoint pens.", featured: false, imageURL: "" },
+  { name: "Fevicol (75 g)", category: "Stationery", price: 30, stock: 60, description: "Strong adhesive glue.", featured: false, imageURL: "" },
 ];
