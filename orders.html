@@ -527,7 +527,7 @@
         /* Try with orderBy first (needs composite index) */
         const q = query(
           collection(db, 'orders'),
-          where('customerUID', '==', uid),
+          where('userID', '==', uid),
           orderBy('createdAt', 'desc')
         );
         const snap = await getDocs(q);
@@ -535,7 +535,7 @@
       } catch (e) {
         /* Fallback: without orderBy, sort client-side */
         try {
-          const q2 = query(collection(db, 'orders'), where('customerUID', '==', uid));
+          const q2 = query(collection(db, 'orders'), where('userID', '==', uid));
           const snap2 = await getDocs(q2);
           allOrders = snap2.docs
             .map(d => ({ id: d.id, ...d.data() }))
