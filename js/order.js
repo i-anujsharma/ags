@@ -41,7 +41,7 @@ export async function placeOrder(items, address) {
     address: address,
     items: items,
     totalAmount: items.reduce((sum, i) => sum + i.price * i.qty, 0),
-    status: "Pending",           // Pending → Confirmed → Shipped → Delivered
+    status: "pending",           // Pending → Confirmed → Shipped → Delivered
     paymentMethod: "COD",        // Cash on Delivery
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
