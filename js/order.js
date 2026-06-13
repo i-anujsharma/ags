@@ -16,7 +16,7 @@ import {
   where,
   getDocs,
   orderBy,
-}  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 // ─── BUY NOW ──────────────────────────────────────────────
 // Call this when "Buy Now" button is clicked on a product card.
 // It skips the cart and goes straight to checkout.
