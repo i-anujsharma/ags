@@ -527,7 +527,7 @@
         /* Try with orderBy first (needs composite index) */
         const q = query(
           collection(db, 'orders'),
-          where('userID', '==', uid),
+          where('userId', '==', uid),
           orderBy('createdAt', 'desc')
         );
         const snap = await getDocs(q);
@@ -535,7 +535,7 @@
       } catch (e) {
         /* Fallback: without orderBy, sort client-side */
         try {
-          const q2 = query(collection(db, 'orders'), where('userID', '==', uid));
+          const q2 = query(collection(db, 'orders'), where('userId', '==', uid));
           const snap2 = await getDocs(q2);
           allOrders = snap2.docs
             .map(d => ({ id: d.id, ...d.data() }))
@@ -658,7 +658,7 @@
         itemsHtml = `<div class="order-item-row">
           <span class="item-name">${o.itemsSummary}</span>
           <span class="item-qty">${o.itemCount || ''} items</span>
-          <span class="item-price">₹${o.total || 0}</span>
+          <span class="item-price">₹${o.totalAmount || o.total || 0}</span>
         </div>`;
       } else {
         itemsHtml = `<div style="font-size:0.84rem;color:var(--text-muted);padding:6px 0">
@@ -666,10 +666,12 @@
         </div>`;
       }
 
-      /* Delivery address */
-      const addr = o.address || o.deliveryAddress || '';
-      const addrHtml = addr
-        ? `<div class="order-address">📍 <span>${addr}</span></div>`
+      /* Delivery address — o.address is an object {address, city, pincode, state} */
+      const addrObj = (typeof o.address === 'object' && o.address !== null) ? o.address : {};
+      const addrParts = [addrObj.address, addrObj.city, addrObj.pincode].filter(Boolean);
+      const addrStr = addrParts.length > 0 ? addrParts.join(', ') : (typeof o.address === 'string' ? o.address : '');
+      const addrHtml = addrStr
+        ? `<div class="order-address">📍 <span>${addrStr}</span></div>`
         : '';
 
       /* WhatsApp button — hide after delivered/cancelled */
@@ -695,7 +697,7 @@
           <div class="order-card-foot">
             <div>
               <div class="order-total-label">Order Total</div>
-              <div class="order-total-amt">₹${o.total || 0}</div>
+              <div class="order-total-amt">₹${o.totalAmount || o.total || 0}</div>
             </div>
             <div class="order-actions">
               ${showWa
