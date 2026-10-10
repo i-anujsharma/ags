@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cart · AGS</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Mukta:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/base.css" />
+  </head>
+  <body>
+    <div id="site-header"></div>
+    <main class="page">
+      <h1>Cart</h1>
+      <div id="list"></div>
+      <p class="total">
+        Total:
+        <b id="total">₹0</b>
+        (Cash on Delivery)
+      </p>
+      <p id="note" class="err"></p>
+      <form id="order-form" class="box" hidden>
+        <input name="name" placeholder="Naam" required />
+        <input name="phone" type="tel" placeholder="Phone" required />
+        <textarea name="address" placeholder="Poora delivery address" required></textarea>
+        <button id="place" class="btn">Order karo (WhatsApp par bhi jayega)</button>
+      </form>
+    </main>
+    <div id="site-footer"></div>
+    <script type="module" src="js/pages/cart.js"></script>
+  </body>
+</html>
