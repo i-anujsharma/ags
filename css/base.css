@@ -288,3 +288,14 @@ a {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.ok {
+  color: var(--ok);
+  font-weight: 600;
+}
+#msg:not(:empty) {
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  background: var(--white);
+  border: 2px solid currentColor;
+}

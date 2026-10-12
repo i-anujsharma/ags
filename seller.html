@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sell on AGS · AGS</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Mukta:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/base.css" />
+  </head>
+  <body>
+    <div id="site-header"></div>
+    <main class="page">
+      <h1>Sell on AGS</h1>
+      <p id="gate"></p>
+      <form id="apply" class="box" hidden>
+        <h2>Seller banne ke liye apply karo</h2>
+        <input name="shopName" placeholder="Shop / brand ka naam" required />
+        <input name="phone" type="tel" placeholder="Phone" required />
+        <button class="btn">Apply karo</button>
+      </form>
+      <div id="panel" hidden>
+        <h2 id="shop-title"></h2>
+        <h2>Product add / edit</h2>
+        <form id="pform" class="box">
+          <input type="hidden" name="id" />
+          <input name="name" placeholder="Product naam" required />
+          <input name="price" type="number" min="0" step="1" placeholder="Price ₹" required />
+          <input name="category" placeholder="Category" required />
+          <input name="stock" type="number" min="0" placeholder="Stock" required />
+          <input name="imageUrl" placeholder="Image URL (optional)" />
+          <label>
+            <input type="checkbox" name="active" checked />
+            Dikhao (active)
+          </label>
+          <button class="btn">Save product</button>
+        </form>
+        <div id="plist"></div>
+        <h2>Mere orders</h2>
+        <div id="olist" class="grid"></div>
+      </div>
+    </main>
+    <div id="site-footer"></div>
+    <script type="module" src="js/pages/seller.js"></script>
+  </body>
+</html>

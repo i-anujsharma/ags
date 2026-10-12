@@ -43,26 +43,49 @@ form.addEventListener("submit", async (e) => {
     location.href = "login.html?next=cart.html";
     return;
   }
-  const f = new FormData(form),
-    items = getCart();
-  const o = {
+  const f = new FormData(form);
+  const info = {
     customerUID: user.uid,
     customerName: f.get("name").trim(),
     phone: f.get("phone").trim(),
     address: f.get("address").trim(),
-    items,
-    totalAmount: cartTotal(),
     paymentMethod: "COD",
   };
+
+  // Cart ko seller ke hisaab se baanto: har seller ka alag order banega
+  const groups = {};
+  for (const i of getCart()) {
+    const key = i.sellerUID || "ags";
+    groups[key] ||= { sellerName: i.sellerName || "Ankit General Store", items: [] };
+    groups[key].items.push({
+      productId: i.productId,
+      name: i.name,
+      price: i.price,
+      qty: i.qty,
+    });
+  }
+
   btn.disabled = true;
   try {
-    await placeOrder(o);
+    let grand = 0;
+    let text = `Naya order (COD)\nNaam: ${info.customerName}\nPhone: ${info.phone}\nAddress: ${info.address}\n`;
+    for (const [sellerUID, g] of Object.entries(groups)) {
+      const totalAmount = g.items.reduce((s, i) => s + i.price * i.qty, 0);
+      await placeOrder({
+        ...info,
+        sellerUID,
+        sellerName: g.sellerName,
+        items: g.items,
+        totalAmount,
+      });
+      grand += totalAmount;
+      text +=
+        `\n[${g.sellerName}]\n` +
+        g.items.map((i) => `${i.name} x${i.qty} = ₹${i.price * i.qty}`).join("\n");
+    }
+    text += `\n\nTotal: ₹${grand}`;
     clearCart();
-    const msg =
-      `Naya order (COD)\nNaam: ${o.customerName}\nPhone: ${o.phone}\nAddress: ${o.address}\n\n` +
-      items.map((i) => `${i.name} x${i.qty} = ₹${i.price * i.qty}`).join("\n") +
-      `\n\nTotal: ₹${o.totalAmount}`;
-    location.href = "https://wa.me/917617263817?text=" + encodeURIComponent(msg);
+    location.href = "https://wa.me/917617263817?text=" + encodeURIComponent(text);
   } catch (err) {
     alert("Order save nahi hua: " + err.message);
     btn.disabled = false;

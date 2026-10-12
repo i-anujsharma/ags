@@ -9,3 +9,8 @@ users:      name, phone, createdAt   (NEVER store role here)
 
 order.status: placed -> confirmed -> out_for_delivery -> delivered | cancelled
 paymentMethod: "COD"
+
+--- Marketplace (sellers) ---
+sellers:  doc id = seller UID; shopName, phone, status (pending|approved|rejected), createdAt
+products: + sellerUID, sellerName   (AGS ke apne products: sellerUID = "ags")
+orders:   + sellerUID, sellerName   (cart seller ke hisaab se split hoke alag orders banta hai)

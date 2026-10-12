@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin · AGS</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Mukta:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;800&family=Mukta:wght@400;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/base.css" />
@@ -16,23 +16,14 @@
       <h1>Admin</h1>
       <p id="gate" class="err">Check ho raha hai...</p>
       <div id="panel" hidden>
+        <h2>Seller applications</h2>
+        <div id="slist"></div>
         <h2>Product add / edit</h2>
         <form id="pform" class="box">
           <input type="hidden" name="id" />
           <input name="name" placeholder="Product naam" required />
-          <input
-            name="price"
-            type="number"
-            min="0"
-            step="1"
-            placeholder="Price ₹"
-            required
-          />
-          <input
-            name="category"
-            placeholder="Category (Grocery, Household...)"
-            required
-          />
+          <input name="price" type="number" min="0" step="1" placeholder="Price ₹" required />
+          <input name="category" placeholder="Category (Grocery, Household...)" required />
           <input name="stock" type="number" min="0" placeholder="Stock" required />
           <input name="imageUrl" placeholder="Image URL (optional)" />
           <label>

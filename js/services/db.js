@@ -65,11 +65,35 @@ export const placeOrder = (o) =>
     createdAt: serverTimestamp(),
   });
 export async function myOrders(uid) {
-  return rows(
-    await getDocs(query(collection(db, "orders"), where("customerUID", "==", uid))),
-  ).sort(byNew);
+  return rows(await getDocs(query(collection(db, "orders"), where("customerUID", "==", uid)))).sort(
+    byNew,
+  );
 }
 export async function allOrders() {
   return rows(await getDocs(collection(db, "orders"))).sort(byNew);
 }
 export const setStatus = (id, status) => updateDoc(doc(db, "orders", id), { status });
+
+// ---- Sellers (marketplace) ----
+export async function getSeller(uid) {
+  const s = await getDoc(doc(db, "sellers", uid));
+  return s.exists() ? { id: s.id, ...s.data() } : null;
+}
+export const applySeller = (uid, d) =>
+  setDoc(doc(db, "sellers", uid), {
+    ...d,
+    status: "pending",
+    createdAt: serverTimestamp(),
+  });
+export async function listSellers() {
+  return rows(await getDocs(collection(db, "sellers")));
+}
+export const setSellerStatus = (uid, status) => updateDoc(doc(db, "sellers", uid), { status });
+export async function sellerProducts(uid) {
+  return rows(await getDocs(query(collection(db, "products"), where("sellerUID", "==", uid))));
+}
+export async function sellerOrders(uid) {
+  return rows(await getDocs(query(collection(db, "orders"), where("sellerUID", "==", uid)))).sort(
+    byNew,
+  );
+}

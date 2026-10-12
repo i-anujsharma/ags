@@ -29,7 +29,7 @@ function renderGrid() {
           (p) => `
     <article class="card">
       ${p.imageUrl ? `<img src="${esc(p.imageUrl)}" alt="${esc(p.name)}" loading="lazy">` : ""}
-      <div class="card-tag">${esc(p.category)}</div><h3>${esc(p.name)}</h3>
+      <div class="card-tag">${esc(p.category)} · ${esc(p.sellerName || "Ankit General Store")}</div><h3>${esc(p.name)}</h3>
       <p class="price">₹${p.price}</p>
       <p class="stock ${p.stock > 0 ? "" : "out"}">${p.stock > 0 ? p.stock + " in stock" : "Out of stock"}</p>
       <button class="btn" data-id="${p.id}" ${p.stock > 0 ? "" : "disabled"}>Add to cart</button>
@@ -55,6 +55,8 @@ grid.addEventListener("click", (e) => {
   if (!b) return;
   const p = PRODUCTS.find((x) => x.id === b.dataset.id);
   addToCart(p, p.stock);
+  b.classList.add("added");
+  setTimeout(() => b.classList.remove("added"), 600);
 });
 try {
   PRODUCTS = await getProducts();

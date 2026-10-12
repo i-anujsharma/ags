@@ -7,6 +7,8 @@ import {
   deleteProduct,
   allOrders,
   setStatus,
+  listSellers,
+  setSellerStatus,
 } from "../services/db.js";
 mountLayout();
 const gate = document.getElementById("gate"),
@@ -21,9 +23,7 @@ onUser(async (u) => {
   if (!u || !(await isAdmin(u.uid))) {
     gate.hidden = false;
     panel.hidden = true;
-    gate.textContent = u
-      ? "Ye account admin nahi hai."
-      : "Pehle admin account se login karo.";
+    gate.textContent = u ? "Ye account admin nahi hai." : "Pehle admin account se login karo.";
     return;
   }
   gate.hidden = true;
@@ -50,7 +50,7 @@ async function loadOrders() {
       .map(
         (
           o,
-        ) => `<article class="card order"><p><b>${esc(o.customerName)}</b> · <a href="tel:${esc(o.phone)}">${esc(o.phone)}</a> · ₹${o.totalAmount}</p>
+        ) => `<article class="card order"><p><b>${esc(o.customerName)}</b> [${esc(o.sellerName || "AGS")}] · <a href="tel:${esc(o.phone)}">${esc(o.phone)}</a> · ₹${o.totalAmount}</p>
     <p>${esc(o.address)}</p><p>${o.items.map((i) => esc(i.name) + " x" + i.qty).join(", ")}</p>
     <select data-oid="${o.id}">${STATUSES.map((s) => `<option ${s === o.status ? "selected" : ""}>${s}</option>`).join("")}</select></article>`,
       )
@@ -66,6 +66,8 @@ pf.addEventListener("submit", async (e) => {
     stock: Number(f.get("stock")),
     imageUrl: f.get("imageUrl").trim(),
     active: f.get("active") === "on",
+    sellerUID: "ags",
+    sellerName: "Ankit General Store",
   });
   pf.reset();
   pf.active.checked = true;
@@ -76,8 +78,7 @@ plist.addEventListener("click", async (e) => {
     del = e.target.dataset.del;
   if (ed) {
     const p = products.find((x) => x.id === ed);
-    for (const k of ["name", "price", "category", "stock", "imageUrl"])
-      pf[k].value = p[k] ?? "";
+    for (const k of ["name", "price", "category", "stock", "imageUrl"]) pf[k].value = p[k] ?? "";
     pf.id.value = p.id;
     pf.active.checked = p.active;
     pf.scrollIntoView();
@@ -89,4 +90,28 @@ plist.addEventListener("click", async (e) => {
 });
 olist.addEventListener("change", (e) => {
   if (e.target.dataset.oid) setStatus(e.target.dataset.oid, e.target.value);
+});
+
+// ---- Seller applications (approve / reject) ----
+const slist = document.getElementById("slist");
+async function loadSellers() {
+  const ss = await listSellers();
+  slist.innerHTML =
+    ss
+      .map(
+        (s) => `<div class="row"><span>${esc(s.shopName)}</span>
+      <span>${esc(s.phone)} · ${esc(s.status)}</span>
+      <span><button class="qty" data-sid="${s.id}" data-st="approved">Approve</button>
+      <button class="qty" data-sid="${s.id}" data-st="rejected">Reject</button></span></div>`,
+      )
+      .join("") || "<p>Koi seller application nahi.</p>";
+}
+slist.addEventListener("click", async (e) => {
+  const id = e.target.dataset.sid;
+  if (!id) return;
+  await setSellerStatus(id, e.target.dataset.st);
+  loadSellers();
+});
+onUser(async (u) => {
+  if (u && (await isAdmin(u.uid))) loadSellers();
 });

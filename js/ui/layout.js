@@ -12,7 +12,7 @@ export function mountLayout() {
 <header class="site-header">
   <a class="brand" href="index.html"><span class="brand-mark">AGS</span><span class="brand-name">Ankit General Store</span></a>
   <nav class="nav" aria-label="Main">
-    <a href="index.html">Home</a><a href="orders.html">My orders</a>
+    <a href="index.html">Home</a><a href="orders.html">My orders</a><a href="seller.html">Sell on AGS</a>
     <a href="login.html" id="auth-link">Login</a>
     <a href="cart.html">Cart <span id="cart-count" class="badge">0</span></a>
   </nav>
@@ -24,7 +24,13 @@ export function mountLayout() {
     document.getElementById("cart-count").textContent = cartCount();
   };
   paint();
-  window.addEventListener("cart:changed", paint);
+  window.addEventListener("cart:changed", () => {
+    paint();
+    const b = document.getElementById("cart-count");
+    b.classList.remove("bump");
+    void b.offsetWidth; // animation dobara chalane ke liye
+    b.classList.add("bump");
+  });
   const a = document.getElementById("auth-link");
   onUser((u) => {
     if (u) {

@@ -21,7 +21,15 @@ export function addToCart(p, stock = Infinity) {
   const found = items.find((i) => i.productId === p.id);
   if (found) {
     if (found.qty < stock) found.qty += 1;
-  } else items.push({ productId: p.id, name: p.name, price: p.price, qty: 1 });
+  } else
+    items.push({
+      productId: p.id,
+      name: p.name,
+      price: p.price,
+      qty: 1,
+      sellerUID: p.sellerUID || "ags",
+      sellerName: p.sellerName || "Ankit General Store",
+    });
   write(items);
 }
 export function setQty(productId, qty) {
