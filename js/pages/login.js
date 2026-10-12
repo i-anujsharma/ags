@@ -1,5 +1,5 @@
 import { mountLayout } from "../ui/layout.js";
-import { login, signup } from "../services/db.js";
+import { login, signup, resetPassword } from "../services/db.js";
 
 mountLayout();
 
@@ -42,7 +42,7 @@ document.getElementById("login-form").addEventListener("submit", (e) => {
   e.preventDefault();
   const f = new FormData(e.target);
   run(e.target, "Login ho gaya! Redirect ho raha hai...", () =>
-    login(f.get("email"), f.get("password"))
+    login(f.get("email"), f.get("password")),
   );
 });
 
@@ -50,6 +50,25 @@ document.getElementById("signup-form").addEventListener("submit", (e) => {
   e.preventDefault();
   const f = new FormData(e.target);
   run(e.target, "Account ban gaya! Redirect ho raha hai...", () =>
-    signup(f.get("name").trim(), f.get("phone").trim(), f.get("email"), f.get("password"))
+    signup(f.get("name").trim(), f.get("phone").trim(), f.get("email"), f.get("password")),
   );
+});
+
+// Forgot password: login form ka email use karke reset link bhejo
+document.getElementById("forgot").addEventListener("click", async () => {
+  const email = document.querySelector('#login-form [name="email"]').value.trim();
+  if (!email) {
+    show("Upar Email wali jagah apna email likho, phir 'Forgot password?' dabao.");
+    return;
+  }
+  try {
+    await resetPassword(email);
+    show(
+      "Agar ye email registered hai to reset link bhej diya gaya hai. Inbox aur Spam dono check karo.",
+      true,
+    );
+  } catch (e) {
+    console.error(e);
+    show(ERRORS[e.code] || e.message);
+  }
 });

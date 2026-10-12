@@ -568,3 +568,17 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+.link-btn {
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: 600 0.95rem var(--b);
+  color: var(--green-dark);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link-btn:hover {
+  color: var(--orange);
+}

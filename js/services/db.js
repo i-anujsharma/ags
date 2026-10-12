@@ -1,6 +1,7 @@
 // Saare Firebase calls sirf yahin. Field names schema.md ke hisaab se.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
+  sendPasswordResetEmail,
   getAuth,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
@@ -97,3 +98,6 @@ export async function sellerOrders(uid) {
     byNew,
   );
 }
+
+// Forgot password: Firebase email par reset link bhejta hai
+export const resetPassword = (email) => sendPasswordResetEmail(auth, email);
