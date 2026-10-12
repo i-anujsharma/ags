@@ -1,5 +1,5 @@
 import { cartCount } from "../services/cart.js";
-import { onUser, logout } from "../services/db.js";
+import { onUser, logout, isAdmin } from "../services/db.js";
 
 export const esc = (s) =>
   String(s ?? "").replace(
@@ -32,6 +32,17 @@ export function mountLayout() {
     b.classList.add("bump");
   });
   const a = document.getElementById("auth-link");
+
+  // Admin account se login ho to header mein "Admin" link dikhao
+  onUser(async (u) => {
+    if (u && (await isAdmin(u.uid)) && !document.getElementById("admin-link")) {
+      const link = document.createElement("a");
+      link.id = "admin-link";
+      link.href = "admin.html";
+      link.textContent = "Admin";
+      document.getElementById("auth-link").before(link);
+    }
+  });
   onUser((u) => {
     if (u) {
       a.textContent = "Logout";
