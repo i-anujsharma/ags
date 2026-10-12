@@ -54,21 +54,33 @@ document.getElementById("signup-form").addEventListener("submit", (e) => {
   );
 });
 
-// Forgot password: login form ka email use karke reset link bhejo
-document.getElementById("forgot").addEventListener("click", async () => {
-  const email = document.querySelector('#login-form [name="email"]').value.trim();
+// Forgot password: email login form se lo (khaali ho to signup form ka email)
+const forgotBtn = document.getElementById("forgot");
+forgotBtn.addEventListener("click", async () => {
+  console.log("Forgot password clicked");
+  const email = (
+    document.querySelector('#login-form [name="email"]').value ||
+    document.querySelector('#signup-form [name="email"]').value
+  ).trim();
   if (!email) {
-    show("Upar Email wali jagah apna email likho, phir 'Forgot password?' dabao.");
+    show("Pehle Email wali jagah apna email likho, phir 'Forgot password?' dabao.");
     return;
   }
+  forgotBtn.disabled = true;
+  show("Reset link bhej raha hu: " + email + " ...", true);
   try {
     await resetPassword(email);
+    console.log("Reset request OK for", email);
     show(
-      "Agar ye email registered hai to reset link bhej diya gaya hai. Inbox aur Spam dono check karo.",
+      "Reset link bhej diya gaya hai (" +
+        email +
+        "). Inbox aur Spam dono check karo. " +
+        "Agar 2-3 minute mein na aaye to wo email registered nahi hai.",
       true,
     );
   } catch (e) {
-    console.error(e);
-    show(ERRORS[e.code] || e.message);
+    console.error("Reset failed:", e.code, e.message);
+    show(ERRORS[e.code] || "Error: " + (e.code || e.message));
   }
+  setTimeout(() => (forgotBtn.disabled = false), 10000);
 });
