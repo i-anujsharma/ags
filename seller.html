@@ -24,19 +24,7 @@
       <div id="panel" hidden>
         <h2 id="shop-title"></h2>
         <h2>Product add / edit</h2>
-        <form id="pform" class="box">
-          <input type="hidden" name="id" />
-          <input name="name" placeholder="Product naam" required />
-          <input name="price" type="number" min="0" step="1" placeholder="Price ₹" required />
-          <input name="category" placeholder="Category" required />
-          <input name="stock" type="number" min="0" placeholder="Stock" required />
-          <input name="imageUrl" placeholder="Image URL (optional)" />
-          <label>
-            <input type="checkbox" name="active" checked />
-            Dikhao (active)
-          </label>
-          <button class="btn">Save product</button>
-        </form>
+        <div id="product-form-root"></div>
         <div id="plist"></div>
         <h2>Mere orders</h2>
         <div id="olist" class="grid"></div>

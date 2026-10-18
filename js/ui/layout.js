@@ -55,3 +55,8 @@ export function mountLayout() {
     }
   });
 }
+
+// Product helpers (cards, detail page, admin list sab yahin se use karte hain)
+export const productImages = (p) => (p.images && p.images.length ? p.images : p.imageUrl ? [p.imageUrl] : []);
+export const mainImage = (p) => productImages(p)[0] || "";
+export const discountPct = (p) => (p.mrp > p.price ? Math.round((1 - p.price / p.mrp) * 100) : 0);

@@ -575,3 +575,233 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- Product form (admin / seller) ---------- */
+.pform h3 {
+  margin: 0.6rem 0 0;
+  font: 600 1.1rem var(--h);
+  color: var(--accent);
+}
+.pform label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.pform label.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--ink);
+}
+.pform textarea {
+  resize: vertical;
+}
+.fgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+.hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.img-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.img-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.img-row input {
+  flex: 1;
+  min-width: 0;
+}
+.thumb {
+  width: 46px;
+  height: 46px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: var(--inset-sm);
+  flex-shrink: 0;
+}
+.pname {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.add-img {
+  align-self: flex-start;
+}
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+}
+.form-actions .btn {
+  margin-top: 0;
+  flex: 1;
+  min-width: 160px;
+}
+.form-msg:empty {
+  display: none;
+}
+
+/* ---------- Product cards: price / discount ---------- */
+.card {
+  position: relative;
+}
+.card-link {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  color: inherit;
+}
+.mrp {
+  color: var(--muted);
+  font: 400 0.95rem var(--b);
+}
+.off {
+  color: var(--orange);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.off.tag {
+  position: absolute;
+  top: 1.4rem;
+  left: 1.4rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 99px;
+  background: var(--bg);
+  box-shadow: var(--raised-sm);
+}
+
+/* ---------- Product detail page ---------- */
+.pd {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 2rem;
+  align-items: start;
+}
+.main-img {
+  border-radius: 26px;
+  padding: 0.8rem;
+  box-shadow: var(--raised);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.main-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 18px;
+  animation: pageIn 0.4s var(--ease);
+}
+.no-img {
+  font: 800 5rem var(--h);
+  color: var(--accent);
+}
+.thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.1rem;
+}
+.thumb-btn {
+  width: 68px;
+  height: 68px;
+  padding: 4px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--bg);
+  cursor: pointer;
+  box-shadow: var(--raised-sm);
+  transition: box-shadow 0.25s var(--ease);
+}
+.thumb-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.thumb-btn[aria-pressed="true"] {
+  box-shadow: var(--inset-sm);
+}
+.info h1 {
+  margin: 0.2rem 0;
+  font: 800 clamp(1.5rem, 4vw, 2.2rem) / 1.15 var(--h);
+}
+.info h3 {
+  margin: 1.4rem 0 0.4rem;
+  font: 600 1.1rem var(--h);
+}
+.pricebox {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 0.5rem 0 0;
+}
+.price.big {
+  font-size: 2rem;
+  margin: 0;
+}
+.buy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin: 1rem 0 0.4rem;
+}
+.buy .btn {
+  margin-top: 0;
+  padding: 0.8rem 2rem;
+}
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font: 700 1.1rem var(--h);
+}
+.points {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+.desc {
+  white-space: pre-line;
+  margin: 0;
+}
+.specs {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+}
+.specs th {
+  text-align: left;
+  width: 38%;
+  padding: 0.6rem 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+  border-radius: 12px 0 0 12px;
+  box-shadow: var(--inset-sm);
+}
+.specs td {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0 12px 12px 0;
+  box-shadow: var(--inset-sm);
+}
+@media (max-width: 760px) {
+  .pd {
+    grid-template-columns: 1fr;
+  }
+}

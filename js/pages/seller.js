@@ -1,4 +1,5 @@
-import { mountLayout, esc } from "../ui/layout.js";
+import { mountLayout, esc, mainImage } from "../ui/layout.js";
+import { mountProductForm } from "../ui/productForm.js";
 import {
   onUser,
   getSeller,
@@ -14,10 +15,14 @@ mountLayout();
 
 const $ = (id) => document.getElementById(id);
 const STATUSES = ["placed", "confirmed", "out_for_delivery", "delivered", "cancelled"];
-const pf = $("pform");
 let user = null;
 let seller = null;
 let products = [];
+
+const form = mountProductForm($("product-form-root"), async (data, id) => {
+  await saveProduct(id, { ...data, sellerUID: user.uid, sellerName: seller.shopName });
+  loadProducts();
+});
 
 // Page ki state: login nahi / apply nahi kiya / pending / rejected / approved
 async function refresh() {
@@ -25,8 +30,7 @@ async function refresh() {
   $("panel").hidden = true;
   $("gate").innerHTML = "";
   if (!user) {
-    $("gate").innerHTML =
-      'Seller banne ke liye pehle <a href="login.html?next=seller.html">login karo</a>.';
+    $("gate").innerHTML = 'Seller banne ke liye pehle <a href="login.html?next=seller.html">login karo</a>.';
     return;
   }
   seller = await getSeller(user.uid);
@@ -53,10 +57,7 @@ $("apply").addEventListener("submit", async (e) => {
   e.preventDefault();
   const f = new FormData(e.target);
   try {
-    await applySeller(user.uid, {
-      shopName: f.get("shopName").trim(),
-      phone: f.get("phone").trim(),
-    });
+    await applySeller(user.uid, { shopName: f.get("shopName").trim(), phone: f.get("phone").trim() });
     refresh();
   } catch (err) {
     $("gate").textContent = "Apply nahi hua: " + err.message;
@@ -68,7 +69,8 @@ async function loadProducts() {
   $("plist").innerHTML =
     products
       .map(
-        (p) => `<div class="row"><span>${esc(p.name)} (${esc(p.category)})</span>
+        (p) => `<div class="row">
+      <span class="pname">${mainImage(p) ? `<img class="thumb" src="${esc(mainImage(p))}" alt="" />` : ""}${esc(p.name)} (${esc(p.category)})</span>
       <span>₹${p.price} · stock ${p.stock}${p.active ? "" : " · hidden"}</span>
       <span><button class="qty" data-edit="${p.id}">Edit</button>
       <button class="qty" data-del="${p.id}">Delete</button></span></div>`,
@@ -92,40 +94,15 @@ async function loadOrders() {
       .join("") || "<p>Abhi koi order nahi.</p>";
 }
 
-pf.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const f = new FormData(pf);
-  await saveProduct(f.get("id") || null, {
-    name: f.get("name").trim(),
-    price: Number(f.get("price")),
-    category: f.get("category").trim(),
-    stock: Number(f.get("stock")),
-    imageUrl: f.get("imageUrl").trim(),
-    active: f.get("active") === "on",
-    sellerUID: user.uid,
-    sellerName: seller.shopName,
-  });
-  pf.reset();
-  pf.active.checked = true;
-  loadProducts();
-});
-
 $("plist").addEventListener("click", async (e) => {
   const ed = e.target.dataset.edit;
   const del = e.target.dataset.del;
-  if (ed) {
-    const p = products.find((x) => x.id === ed);
-    for (const k of ["name", "price", "category", "stock", "imageUrl"]) pf[k].value = p[k] ?? "";
-    pf.id.value = p.id;
-    pf.active.checked = p.active;
-    pf.scrollIntoView();
-  }
+  if (ed) form.fill(products.find((x) => x.id === ed));
   if (del && confirm("Delete karna hai?")) {
     await deleteProduct(del);
     loadProducts();
   }
 });
-
 $("olist").addEventListener("change", (e) => {
   if (e.target.dataset.oid) setStatus(e.target.dataset.oid, e.target.value);
 });

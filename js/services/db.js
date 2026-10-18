@@ -66,9 +66,7 @@ export const placeOrder = (o) =>
     createdAt: serverTimestamp(),
   });
 export async function myOrders(uid) {
-  return rows(await getDocs(query(collection(db, "orders"), where("customerUID", "==", uid)))).sort(
-    byNew,
-  );
+  return rows(await getDocs(query(collection(db, "orders"), where("customerUID", "==", uid)))).sort(byNew);
 }
 export async function allOrders() {
   return rows(await getDocs(collection(db, "orders"))).sort(byNew);
@@ -94,10 +92,14 @@ export async function sellerProducts(uid) {
   return rows(await getDocs(query(collection(db, "products"), where("sellerUID", "==", uid))));
 }
 export async function sellerOrders(uid) {
-  return rows(await getDocs(query(collection(db, "orders"), where("sellerUID", "==", uid)))).sort(
-    byNew,
-  );
+  return rows(await getDocs(query(collection(db, "orders"), where("sellerUID", "==", uid)))).sort(byNew);
 }
 
 // Forgot password: Firebase email par reset link bhejta hai
 export const resetPassword = (email) => sendPasswordResetEmail(auth, email);
+
+// Ek product (detail page ke liye)
+export async function getProduct(id) {
+  const s = await getDoc(doc(db, "products", id));
+  return s.exists() ? { id: s.id, ...s.data() } : null;
+}
